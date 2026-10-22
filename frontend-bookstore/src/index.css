@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    
+    /* Premium Dark Mode Colors */
+    --color-dark-bg: #0B0F19; /* Deep rich dark blue-black */
+    --color-dark-surface: #131B2F; /* Slightly lighter surface */
+    --color-dark-surface-hover: #1E293B; /* Hover state for surface */
+    --color-dark-border: #1E293B; /* Subtle border */
+    --color-dark-text: #F8FAFC; /* Bright text */
+    --color-dark-text-muted: #94A3B8; /* Muted text */
+    --color-dark-accent: #3B82F6; /* Vibrant blue accent */
+    --color-dark-accent-hover: #60A5FA; /* Lighter blue on hover */
+}
+
+@layer utilities {
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+}

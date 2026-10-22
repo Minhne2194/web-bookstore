@@ -1,0 +1,198 @@
+# =============================================================================
+# .gitignore — Project-BookShop-2026
+# Monorepo: NestJS (backend) + Vite/React (frontend)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Dependencies
+# -----------------------------------------------------------------------------
+node_modules/
+**/node_modules/
+presentation/
+# Prisma generated client (auto-generated from schema, rebuild on install)
+generated/prisma/
+.prisma/
+
+# -----------------------------------------------------------------------------
+# Build Outputs
+# -----------------------------------------------------------------------------
+dist/
+build/
+dist-ssr/
+**/dist/
+**/build/
+**/dist-ssr/
+.cache/
+
+# NestJS incremental build info
+tsconfig.tsbuildinfo
+
+# Vite temp files
+*.local
+
+# -----------------------------------------------------------------------------
+# Environment Variables & Secrets
+# Contains DB credentials, JWT secrets, payment API keys (MoMo, VNPay, PayOS)
+# NEVER commit these — use .env.example for documentation
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# Documentation
+/docs/
+**/*.md
+!/README.md
+!/implementation_plan.md
+
+# Logs
+# -----------------------------------------------------------------------------
+*.log
+**/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# -----------------------------------------------------------------------------
+# Test & Coverage Reports
+# NOTE: Test SOURCE files (tests/, test/) are intentionally TRACKED.
+#       Only generated reports and artifacts are ignored here.
+# -----------------------------------------------------------------------------
+coverage/
+.nyc_output/
+
+# Playwright generated artifacts (reports, traces, auth state)
+playwright-report/
+**/playwright-report/
+test-results/
+**/test-results/
+blob-report/
+**/blob-report/
+**/playwright/.cache/
+**/playwright/.auth/
+
+# Jest coverage
+coverage/
+
+# -----------------------------------------------------------------------------
+# User Uploads (runtime data, not source code)
+# Uploaded book images, avatars, etc. — varies per environment
+# -----------------------------------------------------------------------------
+backend-bookstore/uploads/
+
+# -----------------------------------------------------------------------------
+# Large Data Files & Crawler Output
+# Crawled/scraped seed data is too large for version control
+# Regenerate with: npm run catalog:fetch
+# -----------------------------------------------------------------------------
+draft-data.json
+backend-bookstore/scripts/crawler/output/
+
+# Project tools & Temp files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+
+# Vim swap files
+*.swp
+*.swo
+*.sw?
+
+# Project tree snapshots (auto-generated utility output)
+tree.txt
+tree_*.txt
+debug.txt
+
+# Process IDs
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (node --report)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# -----------------------------------------------------------------------------
+# OS-Specific Files
+# -----------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+
+# -----------------------------------------------------------------------------
+# IDE & Editor Files
+# -----------------------------------------------------------------------------
+# VS Code
+.vscode/
+
+# JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+.c9/
+*.launch
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Visual Studio
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.csproj.user
+
+# -----------------------------------------------------------------------------
+# AI Tool Configurations (personal, not shared)
+# -----------------------------------------------------------------------------
+.claude/
+.gemini/
+.cursor/
+.copilot/
+
+# -----------------------------------------------------------------------------
+# Puppeteer / Chromium (used by crawler)
+# Downloaded browser binaries — very large, auto-fetched on install
+# -----------------------------------------------------------------------------
+.cache/puppeteer/
+chromium/
+
+# -----------------------------------------------------------------------------
+# Miscellaneous
+# -----------------------------------------------------------------------------
+*.pdf
+!docs/**/*.pdf
+playwright-report/
+test-results/
+tests/
+tests-examples/
+playwright.config.ts
+*.txt
+*.html
+*.png
+*.js
+*.docx
+*.py

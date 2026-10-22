@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: bookstore-api
+    runtime: docker
+    dockerfilePath: ./backend-bookstore/Dockerfile
+    healthCheckPath: /health
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bookstore-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: REDIS_HOST
+        fromService:
+          name: bookstore-redis
+          type: pserv
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          name: bookstore-redis
+          type: pserv
+          property: port
+      - key: FRONTEND_URL
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: PORT
+        value: "3000"
+  - type: pserv
+    name: bookstore-redis
+    runtime: docker
+    repo: https://github.com/render-examples/redis.git
+    plan: free
+databases:
+  - name: bookstore-db
+    plan: free

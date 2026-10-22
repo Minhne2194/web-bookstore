@@ -1,0 +1,17 @@
+{
+  "name": "project-bookshop-2026",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd backend-bookstore && npm install && cd ../frontend-bookstore && npm install",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"npm --prefix backend-bookstore run start:dev\" \"npm --prefix frontend-bookstore run dev\"",
+    "build": "npm --prefix backend-bookstore run build && npm --prefix frontend-bookstore run build",
+    "test": "npm --prefix backend-bookstore test && npm --prefix backend-bookstore run test:e2e",
+    "ai:evaluate": "npm --prefix backend-bookstore run ai:evaluate",
+    "docker:up": "docker compose up -d",
+    "docker:build": "docker compose up -d --build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

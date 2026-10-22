@@ -1,0 +1,361 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  user_id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String              @unique @db.VarChar(255)
+  password_hash   String
+  phone           String?             @db.VarChar(20)
+  full_name       String?             @db.VarChar(200)
+  role            Role                @default(customer)
+  status          UserStatus          @default(unverified)
+  email_verified  Boolean             @default(false)
+  last_login_at   DateTime?           @db.Timestamptz(6)
+  created_at      DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime            @updatedAt @db.Timestamptz(6)
+  orders          Order[]
+  reviews         Review[]
+  behavior_events UserBehaviorEvent[]
+  profile         UserProfile?
+  sessions        UserSession[]
+  addresses       UserAddress[]
+
+  @@index([email])
+  @@index([status])
+  @@map("users")
+}
+
+model UserProfile {
+  user_id          String        @id @db.Uuid
+  preferred_genres String[]      @db.Uuid
+  preferred_langs  String[]      @db.VarChar
+  birthday         DateTime?     @db.Date
+  gender           String?       @db.VarChar(20)
+  reading_level    ReadingLevel?
+  metadata         Json?         @default("{}")
+  user             User          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model UserSession {
+  session_id  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  device_info Json     @default("{}")
+  ip_address  String?  @db.Inet
+  expires_at  DateTime @db.Timestamptz(6)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  user        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("user_sessions")
+}
+
+model UserAddress {
+  address_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String   @db.Uuid
+  receiver_name String   @db.VarChar(200)
+  phone         String   @db.VarChar(20)
+  province      String   @db.VarChar(100)
+  district      String   @db.VarChar(100)
+  ward          String   @db.VarChar(100)
+  street        String   @db.VarChar(255)
+  is_default    Boolean  @default(false)
+  address_type  String   @default("home") @db.VarChar(20)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @updatedAt @db.Timestamptz(6)
+
+  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("user_addresses")
+}
+
+model Publisher {
+  publisher_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String   @db.VarChar(300)
+  slug         String   @unique @db.VarChar(300)
+  website      String?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  books        Book[]
+
+  @@map("publishers")
+}
+
+model Author {
+  author_id    String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String       @db.VarChar(300)
+  slug         String       @unique @db.VarChar(300)
+  bio          String?
+  avatar_url   String?
+  created_at   DateTime     @default(now()) @db.Timestamptz(6)
+  book_authors BookAuthor[]
+
+  @@map("authors")
+}
+
+model Category {
+  category_id     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parent_id       String?        @db.Uuid
+  name            String         @db.VarChar(200)
+  slug            String         @unique @db.VarChar(200)
+  level           Int            @db.SmallInt
+  sort_order      Int            @default(0)
+  created_at      DateTime       @default(now()) @db.Timestamptz(6)
+  book_categories BookCategory[]
+  parent          Category?      @relation("CategoryToCategory", fields: [parent_id], references: [category_id])
+  children        Category[]     @relation("CategoryToCategory")
+
+  @@map("categories")
+}
+
+model Book {
+  book_id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  isbn            String?             @unique @db.VarChar(20)
+  title           String              @db.VarChar(500)
+  slug            String              @unique @db.VarChar(500)
+  description     String?
+  price           Decimal             @db.Decimal(12, 2)
+  compare_price   Decimal?            @db.Decimal(12, 2)
+  stock_qty       Int                 @default(0)
+  sold_count      Int                 @default(0)
+  page_count      Int?
+  language        String              @default("vi") @db.VarChar(10)
+  publish_year    Int?                @db.SmallInt
+  publisher_id    String?             @db.Uuid
+  cover_url       String?
+  extra_images    Json                @default("[]")
+  avg_rating      Decimal             @default(0) @db.Decimal(3, 2)
+  rating_count    Int                 @default(0)
+  metadata        Json                @default("{}")
+  is_active       Boolean             @default(true)
+  created_at      DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime            @updatedAt @db.Timestamptz(6)
+  book_authors    BookAuthor[]
+  book_categories BookCategory[]
+  publisher       Publisher?          @relation(fields: [publisher_id], references: [publisher_id])
+  order_items     OrderItem[]
+  reviews         Review[]
+  behavior_events UserBehaviorEvent[]
+
+  @@index([publisher_id])
+  @@index([language])
+  @@index([is_active])
+  @@index([price])
+  @@index([avg_rating(sort: Desc)])
+  @@index([sold_count(sort: Desc)])
+  @@map("books")
+}
+
+model BookAuthor {
+  book_id   String     @db.Uuid
+  author_id String     @db.Uuid
+  role      AuthorRole @default(author)
+  author    Author     @relation(fields: [author_id], references: [author_id], onDelete: Cascade)
+  book      Book       @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+
+  @@id([book_id, author_id])
+  @@map("book_authors")
+}
+
+model BookCategory {
+  book_id     String   @db.Uuid
+  category_id String   @db.Uuid
+  is_primary  Boolean  @default(false)
+  book        Book     @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+  category    Category @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
+
+  @@id([book_id, category_id])
+  @@index([category_id])
+  @@map("book_categories")
+}
+
+model Order {
+  order_id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_code       String        @unique @db.VarChar(20)
+  user_id          String        @db.Uuid
+  status           OrderStatus   @default(pending)
+  subtotal         Decimal       @db.Decimal(12, 2)
+  discount_amount  Decimal       @default(0) @db.Decimal(12, 2)
+  shipping_fee     Decimal       @default(0) @db.Decimal(12, 2)
+  total_amount     Decimal       @db.Decimal(12, 2)
+  payment_method   PaymentMethod
+  payment_status   PaymentStatus @default(pending)
+  shipping_address Json          @default("{}")
+  note             String?
+  coupon_code      String?       @db.VarChar(50)
+  created_at       DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime      @updatedAt @db.Timestamptz(6)
+  items            OrderItem[]
+  user             User          @relation(fields: [user_id], references: [user_id])
+  reviews          Review[]
+
+  @@index([user_id])
+  @@index([status])
+  @@index([created_at(sort: Desc)])
+  @@map("orders")
+}
+
+model OrderItem {
+  item_id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id   String  @db.Uuid
+  book_id    String  @db.Uuid
+  quantity   Int
+  unit_price Decimal @db.Decimal(12, 2)
+  discount   Decimal @default(0) @db.Decimal(12, 2)
+  book       Book    @relation(fields: [book_id], references: [book_id])
+  order      Order   @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@index([order_id])
+  @@index([book_id])
+  @@map("order_items")
+}
+
+model Review {
+  review_id     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  book_id       String       @db.Uuid
+  user_id       String       @db.Uuid
+  order_id      String?      @db.Uuid
+  rating        Int          @db.SmallInt
+  title         String?      @db.VarChar(200)
+  body          String?
+  helpful_count Int          @default(0)
+  status        ReviewStatus @default(pending)
+  created_at    DateTime     @default(now()) @db.Timestamptz(6)
+  votes         ReviewVote[]
+  book          Book         @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+  order         Order?       @relation(fields: [order_id], references: [order_id])
+  user          User         @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@unique([user_id, book_id, order_id])
+  @@index([book_id])
+  @@index([user_id])
+  @@index([status])
+  @@map("reviews")
+}
+
+model ReviewVote {
+  vote_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  review_id  String   @db.Uuid
+  user_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  review     Review   @relation(fields: [review_id], references: [review_id], onDelete: Cascade)
+
+  @@unique([user_id, review_id])
+  @@index([review_id])
+  @@map("review_votes")
+}
+
+model UserBehaviorEvent {
+  event_id     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String?   @db.Uuid
+  session_id   String?   @db.Uuid
+  event_type   EventType
+  book_id      String?   @db.Uuid
+  search_query String?
+  duration_sec Int?
+  metadata     Json      @default("{}")
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  book         Book?     @relation(fields: [book_id], references: [book_id])
+  user         User?     @relation(fields: [user_id], references: [user_id])
+
+  @@index([user_id, created_at(sort: Desc)])
+  @@index([book_id, event_type])
+  @@index([session_id])
+  @@map("user_behavior_events")
+}
+
+model Coupon {
+  coupon_id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                String       @unique @db.VarChar(50)
+  discount_type       DiscountType
+  discount_value      Decimal      @db.Decimal(12, 2)
+  min_order_value     Decimal?     @db.Decimal(12, 2)
+  max_discount_amount Decimal?     @db.Decimal(12, 2)
+  usage_limit         Int?
+  used_count          Int          @default(0)
+  start_date          DateTime     @db.Timestamptz(6)
+  end_date            DateTime     @db.Timestamptz(6)
+  is_active           Boolean      @default(true)
+  created_at          DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime     @updatedAt @db.Timestamptz(6)
+
+  @@index([code])
+  @@index([is_active])
+  @@map("coupons")
+}
+
+enum Role {
+  customer
+  admin
+  moderator
+}
+
+enum UserStatus {
+  active
+  banned
+  unverified
+}
+
+enum ReadingLevel {
+  casual
+  moderate
+  heavy
+}
+
+enum AuthorRole {
+  author
+  translator
+  editor
+  illustrator
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  shipping
+  delivered
+  cancelled
+  refunded
+}
+
+enum PaymentMethod {
+  cod
+  bank_transfer
+  momo
+  vnpay
+  payos
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}
+
+enum EventType {
+  view
+  add_to_cart
+  wishlist
+  purchase
+  search
+}
+
+enum DiscountType {
+  percentage
+  fixed_amount
+  free_shipping
+}
