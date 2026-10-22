@@ -13,26 +13,19 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: REDIS_HOST
-        fromService:
-          name: bookstore-redis
-          type: pserv
-          property: host
+        sync: false
       - key: REDIS_PORT
-        fromService:
-          name: bookstore-redis
-          type: pserv
-          property: port
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_TLS
+        sync: false
       - key: FRONTEND_URL
         sync: false
       - key: DEEPSEEK_API_KEY
         sync: false
       - key: PORT
         value: "3000"
-  - type: pserv
-    name: bookstore-redis
-    runtime: docker
-    repo: https://github.com/render-examples/redis.git
-    plan: free
 databases:
   - name: bookstore-db
     plan: free
