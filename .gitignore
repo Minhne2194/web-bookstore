@@ -192,6 +192,7 @@ tests-examples/
 playwright.config.ts
 *.txt
 *.html
+!frontend-bookstore/index.html
 *.png
 *.js
 !backend-bookstore/scripts/crawler/fahasa-catalog.js
