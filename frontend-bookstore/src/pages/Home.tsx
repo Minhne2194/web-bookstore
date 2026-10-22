@@ -243,10 +243,14 @@ export function Home() {
             <div key={label} className="bg-white dark:bg-dark-surface rounded-lg flex flex-col sm:flex-row shadow-sm border border-slate-200 dark:border-dark-border">
               <div className="flex gap-3 py-6 px-4 sm:px-6 items-center shrink-0 w-full sm:w-auto">
                 {books[0] && (
-                  <SafeImage src={books[0].cover_url || 'https://placehold.co/200x300'} alt={books[0].title} className="w-16 md:w-20 object-contain mix-blend-multiply dark:mix-blend-normal bg-slate-50 rounded p-1 aspect-2/3" />
+                  <Link to={`/book/${books[0].book_id}`} className="shrink-0 transition-transform hover:-translate-y-1 hover:shadow-md rounded">
+                    <SafeImage src={books[0].cover_url || 'https://placehold.co/200x300'} alt={books[0].title} className="w-16 md:w-20 object-contain mix-blend-multiply dark:mix-blend-normal bg-slate-50 rounded p-1 aspect-2/3" />
+                  </Link>
                 )}
                 {books[1] && (
-                  <SafeImage src={books[1].cover_url || 'https://placehold.co/200x300'} alt={books[1].title} className="w-16 md:w-20 object-contain mix-blend-multiply dark:mix-blend-normal bg-slate-50 rounded p-1 aspect-2/3" />
+                  <Link to={`/book/${books[1].book_id}`} className="shrink-0 transition-transform hover:-translate-y-1 hover:shadow-md rounded">
+                    <SafeImage src={books[1].cover_url || 'https://placehold.co/200x300'} alt={books[1].title} className="w-16 md:w-20 object-contain mix-blend-multiply dark:mix-blend-normal bg-slate-50 rounded p-1 aspect-2/3" />
+                  </Link>
                 )}
               </div>
               <div className="py-6 px-4 sm:py-8 sm:px-6 flex-1 flex flex-col justify-center border-t sm:border-t-0 sm:border-l border-slate-200">
@@ -271,11 +275,13 @@ export function Home() {
                 {t('home.featured')}
                 <div className="absolute top-full left-0 w-0 h-0 border-t-[6px] border-l-[6px] border-t-[#3b3266] border-l-transparent"></div>
               </div>
-              <div className="w-28 md:w-32 shrink-0 mx-auto sm:mx-0 mt-6 sm:mt-2 mb-5 sm:mb-0 sm:mr-6 text-center sm:text-left bg-white dark:bg-dark-bg p-2 rounded-md shadow-sm">
+              <Link to={`/book/${book.book_id}`} className="w-28 md:w-32 shrink-0 mx-auto sm:mx-0 mt-6 sm:mt-2 mb-5 sm:mb-0 sm:mr-6 text-center sm:text-left bg-white dark:bg-dark-bg p-2 rounded-md shadow-sm block hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <SafeImage src={book.cover_url || 'https://placehold.co/300x450'} alt={book.title} className="w-full object-contain mix-blend-multiply dark:mix-blend-normal aspect-2/3" />
-              </div>
+              </Link>
               <div className="flex-1 flex flex-col justify-center">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-dark-text mb-3 leading-tight line-clamp-2">{book.title}</h3>
+                <Link to={`/book/${book.book_id}`}>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-dark-text mb-3 leading-tight line-clamp-2 hover:text-indigo-600 transition-colors">{book.title}</h3>
+                </Link>
                 <p className="text-slate-600 dark:text-dark-text-muted mb-6 text-sm leading-relaxed line-clamp-3">
                   {book.description || (i === 0 ? t('home.featuredDesc1') : t('home.featuredDesc2'))}
                 </p>
