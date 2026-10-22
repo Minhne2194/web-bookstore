@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
@@ -257,5 +261,85 @@ export class OrdersService {
       where: { order_id: orderId },
       data: { status: normalizedStatus },
     });
+  }
+
+  /**
+   * Đổi phương thức thanh toán cho đơn hàng còn chờ thanh toán.
+   * Không hoàn kho ở bước này — đơn vẫn giữ trạng thái pending.
+   */
+  async changePaymentMethod(orderId: string, userId: string, method: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { order_id: orderId, user_id: userId },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Không tìm thấy đơn hàng');
+    }
+
+    if (order.status !== 'pending' || order.payment_status !== 'pending') {
+      throw new BadRequestException(
+        'Đơn hàng không ở trạng thái chờ thanh toán',
+      );
+    }
+
+    const paymentMethod = this.normalizePaymentMethod(method);
+
+    if (order.payment_method === paymentMethod) {
+      return order;
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { order_id: orderId },
+      data: { payment_method: paymentMethod },
+    });
+
+    return {
+      order_id: updatedOrder.order_id,
+      payment_method: updatedOrder.payment_method,
+      total_amount: updatedOrder.total_amount,
+      status: updatedOrder.status,
+      payment_status: updatedOrder.payment_status,
+    };
+  }
+
+  /**
+   * Hủy đơn hàng còn chờ thanh toán và hoàn lại tồn kho.
+   */
+  async cancelPendingOrder(orderId: string, userId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { order_id: orderId, user_id: userId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Không tìm thấy đơn hàng');
+    }
+
+    if (order.status !== 'pending' || order.payment_status !== 'pending') {
+      throw new BadRequestException(
+        'Đơn hàng không ở trạng thái chờ thanh toán',
+      );
+    }
+
+    for (const item of order.items) {
+      await this.prisma.book.update({
+        where: { book_id: item.book_id },
+        data: {
+          stock_qty: { increment: item.quantity },
+          sold_count: { decrement: item.quantity },
+        },
+      });
+    }
+
+    await this.prisma.order.update({
+      where: { order_id: orderId },
+      data: { status: 'cancelled', payment_status: 'failed' },
+    });
+
+    return {
+      order_id: orderId,
+      status: 'cancelled',
+      message: 'Đã hủy đơn hàng',
+    };
   }
 }

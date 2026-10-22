@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersService } from './orders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import Redis from 'ioredis';
 import { OrderStatus } from '@prisma/client';
 
@@ -135,6 +135,133 @@ describe('OrdersService', () => {
       await expect(service.updateOrderStatus('ord1', 'invalid_status')).rejects.toThrow(
         BadRequestException,
       );
+    });
+  });
+
+  describe('changePaymentMethod', () => {
+    const pendingOrder = {
+      order_id: 'ord1',
+      user_id: 'user1',
+      status: 'pending',
+      payment_status: 'pending',
+      payment_method: 'momo',
+      total_amount: 100000,
+    };
+
+    it('should throw NotFoundException when order does not belong to user', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.changePaymentMethod('ord1', 'user1', 'vnpay'),
+      ).rejects.toThrow(NotFoundException);
+      expect(mockPrismaService.order.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when order is not awaiting payment', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue({
+        ...pendingOrder,
+        status: 'confirmed',
+      });
+
+      await expect(
+        service.changePaymentMethod('ord1', 'user1', 'vnpay'),
+      ).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.order.update).not.toHaveBeenCalled();
+    });
+
+    it('should be a no-op when the method is unchanged', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue(pendingOrder);
+
+      const result = await service.changePaymentMethod('ord1', 'user1', 'momo');
+
+      expect(mockPrismaService.order.update).not.toHaveBeenCalled();
+      expect(result.payment_method).toBe('momo');
+    });
+
+    it('should update only the payment method', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue(pendingOrder);
+      mockPrismaService.order.update.mockResolvedValue({
+        ...pendingOrder,
+        payment_method: 'vnpay',
+      });
+
+      const result = await service.changePaymentMethod(
+        'ord1',
+        'user1',
+        'vnpay',
+      );
+
+      expect(mockPrismaService.order.update).toHaveBeenCalledWith({
+        where: { order_id: 'ord1' },
+        data: { payment_method: 'vnpay' },
+      });
+      expect(mockPrismaService.book.update).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        order_id: 'ord1',
+        payment_method: 'vnpay',
+        total_amount: 100000,
+        status: 'pending',
+        payment_status: 'pending',
+      });
+    });
+  });
+
+  describe('cancelPendingOrder', () => {
+    const pendingOrder = {
+      order_id: 'ord1',
+      user_id: 'user1',
+      status: 'pending',
+      payment_status: 'pending',
+      payment_method: 'payos',
+      items: [
+        { book_id: 'book1', quantity: 2 },
+        { book_id: 'book2', quantity: 1 },
+      ],
+    };
+
+    it('should throw NotFoundException when order is not found', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue(null);
+
+      await expect(service.cancelPendingOrder('ord1', 'user1')).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockPrismaService.book.update).not.toHaveBeenCalled();
+      expect(mockPrismaService.order.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when order is already paid', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue({
+        ...pendingOrder,
+        payment_status: 'paid',
+      });
+
+      await expect(service.cancelPendingOrder('ord1', 'user1')).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockPrismaService.book.update).not.toHaveBeenCalled();
+    });
+
+    it('should restore stock and cancel the order', async () => {
+      mockPrismaService.order.findUnique.mockResolvedValue(pendingOrder);
+      mockPrismaService.book.update.mockResolvedValue({});
+      mockPrismaService.order.update.mockResolvedValue({});
+
+      const result = await service.cancelPendingOrder('ord1', 'user1');
+
+      expect(mockPrismaService.book.update).toHaveBeenCalledTimes(2);
+      expect(mockPrismaService.book.update).toHaveBeenCalledWith({
+        where: { book_id: 'book1' },
+        data: { stock_qty: { increment: 2 }, sold_count: { decrement: 2 } },
+      });
+      expect(mockPrismaService.order.update).toHaveBeenCalledWith({
+        where: { order_id: 'ord1' },
+        data: { status: 'cancelled', payment_status: 'failed' },
+      });
+      expect(result).toEqual({
+        order_id: 'ord1',
+        status: 'cancelled',
+        message: 'Đã hủy đơn hàng',
+      });
     });
   });
 });

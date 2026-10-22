@@ -3,7 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../components/Toast';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import { CheckCircle2, ArrowLeft, Wallet, CreditCard, Building2, Tag, X, QrCode } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, Wallet, Tag, X, Building2, CreditCard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SafeImage } from '../components/SafeImage';
 import { useTranslation, Trans } from 'react-i18next';
@@ -14,13 +14,6 @@ interface Book {
     title: string;
     price: string | number;
     cover_url: string | null;
-}
-
-interface Order {
-    order_id: string;
-    order_code: string;
-    total_amount: number | string;
-    payment_method: string;
 }
 
 const API_URL = `${API_BASE_URL}`;
@@ -36,7 +29,6 @@ export function Checkout() {
     const [loading, setLoading] = useState<boolean>(true);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isProcessingPayment, setIsProcessingPayment] = useState(false);
     const [promoCode, setPromoCode] = useState(searchParams.get('promo') || '');
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
     const [isValidatingPromo, setIsValidatingPromo] = useState(false);
@@ -155,14 +147,11 @@ export function Checkout() {
 
             if (res.ok) {
                 const data = await res.json();
-
-                // For online payment gateways, redirect to payment page
-                if (data.requiresPayment && (formData.paymentMethod === 'momo' || formData.paymentMethod === 'vnpay' || formData.paymentMethod === 'payos' || formData.paymentMethod === 'bank_transfer')) {
-                    await initiateOnlinePayment(data.order);
+                fetchCart();
+                if (data.requiresPayment) {
+                    navigate(`/payment/process/${data.order.order_id}`);
                 } else {
-                    // For COD, show success immediately
                     setIsSuccess(true);
-                    fetchCart();
                     triggerConfetti();
                 }
             } else {
@@ -174,51 +163,6 @@ export function Checkout() {
             toast(t('checkout.errorGeneral'), 'error');
         } finally {
             setIsSubmitting(false);
-        }
-    };
-
-    const initiateOnlinePayment = async (createdOrder: Order) => {
-        setIsProcessingPayment(true);
-
-        const paymentEndpoints: Record<string, string> = {
-            momo: 'momo/create',
-            vnpay: 'vnpay/create',
-            payos: 'payos/create',
-            bank_transfer: 'payos/create',
-        };
-
-        try {
-            const paymentEndpoint = paymentEndpoints[formData.paymentMethod] || 'momo/create';
-            const res = await fetch(`${API_URL}/payment/${paymentEndpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    orderId: createdOrder.order_id,
-                    amount: totalAmount,
-                    orderInfo: `Thanh toan don hang ${createdOrder.order_code}`
-                })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                if (data.payUrl) {
-                    // Redirect to payment gateway
-                    window.location.href = data.payUrl;
-                } else {
-                    toast(t('checkout.errorInitPayment'), 'error');
-                }
-            } else {
-                const err = await res.json();
-                toast(t('checkout.errorPayment', { message: err.message || 'Không thể khởi tạo thanh toán' }), 'error');
-            }
-        } catch (error) {
-            console.error(error);
-            toast(t('checkout.errorPaymentGeneral'), 'error');
-        } finally {
-            setIsProcessingPayment(false);
         }
     };
 
@@ -248,40 +192,12 @@ export function Checkout() {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numPrice);
     };
 
-    const getPaymentMethodIcon = (method: string) => {
-        switch (method) {
-            case 'cod':
-                return <Wallet className="w-5 h-5" />;
-            case 'bank_transfer':
-                return <Building2 className="w-5 h-5" />;
-            case 'momo':
-                return <CreditCard className="w-5 h-5" />;
-            case 'vnpay':
-                return <CreditCard className="w-5 h-5" />;
-            case 'payos':
-                return <QrCode className="w-5 h-5" />;
-            default:
-                return <Wallet className="w-5 h-5" />;
-        }
-    };
-
-    const getPaymentMethodName = (method: string) => {
-        switch (method) {
-            case 'cod':
-                return t('checkout.methodCod');
-            case 'bank_transfer':
-                return t('checkout.methodBank');
-            case 'momo':
-                return t('checkout.methodMomo');
-            case 'vnpay':
-                return t('checkout.methodVnpay');
-            case 'payos':
-                return t('checkout.methodPayos');
-            default:
-                return t('checkout.methodCod');
-        }
-    };
-
+    const paymentOptions = [
+        { value: 'cod', icon: Wallet, label: t('checkout.methodCod') },
+        { value: 'bank_transfer', icon: Building2, label: t('checkout.methodBank') },
+        { value: 'momo', icon: CreditCard, label: t('checkout.methodMomo') },
+        { value: 'vnpay', icon: CreditCard, label: t('checkout.methodVnpay') },
+    ];
 
     const handleApplyPromo = async () => {
         if (!promoCode.trim() || !token) return;
@@ -375,32 +291,34 @@ export function Checkout() {
                             <div className="pt-4">
                                 <label className="block text-sm font-medium text-slate-700 mb-3">{t('checkout.paymentMethod')}</label>
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                                        <input type="radio" name="payment" value="cod" checked={formData.paymentMethod === 'cod'} onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })} className="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
-                                        {getPaymentMethodIcon('cod')}
-                                        <span className="font-medium text-slate-700 text-sm">{getPaymentMethodName('cod')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                                        <input type="radio" name="payment" value="bank_transfer" checked={formData.paymentMethod === 'bank_transfer'} onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })} className="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
-                                        {getPaymentMethodIcon('bank_transfer')}
-                                        <span className="font-medium text-slate-700 text-sm">{getPaymentMethodName('bank_transfer')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                                        <input type="radio" name="payment" value="momo" checked={formData.paymentMethod === 'momo'} onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })} className="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
-                                        {getPaymentMethodIcon('momo')}
-                                        <span className="font-medium text-slate-700 text-sm">{getPaymentMethodName('momo')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                                        <input type="radio" name="payment" value="vnpay" checked={formData.paymentMethod === 'vnpay'} onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })} className="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
-                                        {getPaymentMethodIcon('vnpay')}
-                                        <span className="font-medium text-slate-700 text-sm">{getPaymentMethodName('vnpay')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                                        <input type="radio" name="payment" value="payos" checked={formData.paymentMethod === 'payos'} onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })} className="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
-                                        {getPaymentMethodIcon('payos')}
-                                        <span className="font-medium text-slate-700 text-sm">{getPaymentMethodName('payos')}</span>
-                                    </label>
+                                    {paymentOptions.map(({ value, icon: Icon, label }) => (
+                                        <label
+                                            key={value}
+                                            className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${formData.paymentMethod === value
+                                                ? 'border-indigo-500 bg-indigo-50/60'
+                                                : 'border-slate-200 hover:bg-slate-50'
+                                                }`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="payment"
+                                                value={value}
+                                                checked={formData.paymentMethod === value}
+                                                onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                                                className="text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                                            />
+                                            <Icon className="w-5 h-5 text-slate-600" />
+                                            <span className="font-medium text-slate-700 text-sm">{label}</span>
+                                        </label>
+                                    ))}
                                 </div>
+                                {formData.paymentMethod !== 'cod' && (
+                                    <p className="mt-3 text-xs text-slate-500 leading-relaxed">
+                                        {t('checkout.redirectNote', {
+                                            method: paymentOptions.find(o => o.value === formData.paymentMethod)?.label,
+                                        })}
+                                    </p>
+                                )}
                             </div>
                         </form>
                     </div>
@@ -497,21 +415,15 @@ export function Checkout() {
                             <button
                                 type="submit"
                                 form="checkout-form"
-                                disabled={isSubmitting || isProcessingPayment}
+                                disabled={isSubmitting}
                                 className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white h-12 rounded-full font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                {isSubmitting || isProcessingPayment ? (
+                                {isSubmitting ? (
                                     <span className="animate-pulse">{t('checkout.processing')}</span>
                                 ) : (
                                     <>{t('checkout.placeOrder')} <CheckCircle2 className="w-5 h-5" /></>
                                 )}
                             </button>
-
-                            {(formData.paymentMethod === 'momo' || formData.paymentMethod === 'vnpay' || formData.paymentMethod === 'payos' || formData.paymentMethod === 'bank_transfer') && (
-                                <p className="text-xs text-slate-500 mt-3 text-center">
-                                    {t('checkout.redirectNote', { method: getPaymentMethodName(formData.paymentMethod) })}
-                                </p>
-                            )}
                         </div>
                     </div>
                 </div>

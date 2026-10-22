@@ -13,6 +13,8 @@ describe('OrdersController', () => {
     getAllOrdersForAdmin: jest.fn(),
     updateOrderStatus: jest.fn(),
     getOrderForPayment: jest.fn(),
+    changePaymentMethod: jest.fn(),
+    cancelPendingOrder: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -108,6 +110,46 @@ describe('OrdersController', () => {
       });
 
       expect(result.status).toBe('confirmed');
+    });
+  });
+
+  describe('changePayment', () => {
+    it('should call ordersService.changePaymentMethod with userId', async () => {
+      const mockReq = { user: { sub: 'user1', role: 'user' } };
+      mockOrdersService.changePaymentMethod.mockResolvedValue({
+        order_id: 'ord1',
+        payment_method: 'vnpay',
+      });
+
+      const result = await controller.changePayment(mockReq, 'ord1', {
+        payment_method: 'vnpay',
+      });
+
+      expect(mockOrdersService.changePaymentMethod).toHaveBeenCalledWith(
+        'ord1',
+        'user1',
+        'vnpay',
+      );
+      expect(result.payment_method).toBe('vnpay');
+    });
+  });
+
+  describe('cancelOrder', () => {
+    it('should call ordersService.cancelPendingOrder with userId', async () => {
+      const mockReq = { user: { sub: 'user1', role: 'user' } };
+      mockOrdersService.cancelPendingOrder.mockResolvedValue({
+        order_id: 'ord1',
+        status: 'cancelled',
+        message: 'Đã hủy đơn hàng',
+      });
+
+      const result = await controller.cancelOrder(mockReq, 'ord1');
+
+      expect(mockOrdersService.cancelPendingOrder).toHaveBeenCalledWith(
+        'ord1',
+        'user1',
+      );
+      expect(result.status).toBe('cancelled');
     });
   });
 });

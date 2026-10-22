@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle2, XCircle, ArrowRight, Package } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, Package, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -25,11 +25,12 @@ export function PaymentResult() {
         // Check for PayOS response
         const payosOrderCode = searchParams.get('orderCode');
         const payosStatus = searchParams.get('status');
+        const ourOrderId = searchParams.get('orderId');
 
         if (payosOrderCode !== null && payosStatus !== null) {
             const success = payosStatus === 'PAID';
             setIsSuccess(success);
-            setOrderId(payosOrderCode);
+            setOrderId(ourOrderId || payosOrderCode);
             setMessage(success
                 ? t('paymentResult.payosSuccess')
                 : t('paymentResult.payosFailed', { status: payosStatus })
@@ -155,6 +156,15 @@ export function PaymentResult() {
                             </Link>
                         ) : (
                             <>
+                                {orderId && (
+                                    <Link
+                                        to={`/payment/process/${orderId}`}
+                                        className="flex items-center justify-center gap-2 w-full bg-amber-500 text-white px-6 py-3 rounded-full font-bold hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
+                                    >
+                                        <RotateCcw className="w-5 h-5" />
+                                        {t('paymentProcess.backToPayment')}
+                                    </Link>
+                                )}
                                 <Link
                                     to={`/account?orderId=${orderId}`}
                                     className="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white px-6 py-3 rounded-full font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"

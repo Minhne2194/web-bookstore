@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as crypto from 'crypto';
 import axios from 'axios';
@@ -6,8 +6,9 @@ import axios from 'axios';
 const { PayOS } = require('@payos/node');
 
 @Injectable()
-export class PaymentService {
+export class PaymentService implements OnModuleInit {
   private payOS: any;
+  private reconcileTimer?: NodeJS.Timeout;
 
   constructor(private prisma: PrismaService) {
     if (process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY) {
@@ -20,6 +21,20 @@ export class PaymentService {
       console.warn('PayOS credentials not configured. PayOS payments will be unavailable.');
       this.payOS = null;
     }
+  }
+
+  /**
+   * Tự động hủy các đơn chờ thanh toán quá 15 phút (chạy mỗi phút).
+   * Timer được unref() để không giữ process sống.
+   */
+  onModuleInit() {
+    this.reconcileTimer = setInterval(() => {
+      this.reconcileAbandonedPayments().catch((e) =>
+        console.error('Reconcile error:', e),
+      );
+    }, 60_000);
+
+    this.reconcileTimer.unref?.();
   }
 
   // MoMo Configuration
@@ -325,7 +340,9 @@ export class PaymentService {
       where: {
         payment_status: 'pending',
         status: 'pending',
-        payment_method: { in: ['momo', 'vnpay'] },
+        payment_method: {
+          in: ['momo', 'vnpay', 'payos', 'bank_transfer'],
+        },
         created_at: { lt: cutoff },
       },
       include: { items: true },
@@ -406,8 +423,8 @@ export class PaymentService {
         orderCode: payosOrderCode,
         amount,
         description: orderInfo.slice(0, 25),
-        returnUrl,
-        cancelUrl,
+        returnUrl: `${returnUrl}?orderId=${orderId}`,
+        cancelUrl: `${cancelUrl}?orderId=${orderId}`,
       });
 
       return {

@@ -172,7 +172,9 @@ describe('PaymentService', () => {
         where: {
           payment_status: 'pending',
           status: 'pending',
-          payment_method: { in: ['momo', 'vnpay'] },
+          payment_method: {
+            in: ['momo', 'vnpay', 'payos', 'bank_transfer'],
+          },
           created_at: { lt: expect.any(Date) },
         },
         include: { items: true },

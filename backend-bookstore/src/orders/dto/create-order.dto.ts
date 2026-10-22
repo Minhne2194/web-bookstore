@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsIn(['cod', 'bank_transfer', 'momo', 'vnpay', 'payos'], {
+  @IsIn(['cod', 'bank_transfer', 'momo', 'vnpay'], {
     message: 'Phương thức thanh toán không hợp lệ',
   })
   payment_method: string;

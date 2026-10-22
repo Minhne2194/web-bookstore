@@ -15,6 +15,7 @@ import { Account } from './pages/Account';
 import { NewBooks } from './pages/NewBooks';
 import { BestSellers } from './pages/BestSellers';
 import { PaymentResult } from './pages/PaymentResult';
+import { PaymentProcess } from './pages/PaymentProcess';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
@@ -60,6 +61,7 @@ export default function App() {
                 <Route path="/book/:bookId" element={<BookDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment/process/:orderId" element={<PaymentProcess />} />
                 <Route path="/payment/result" element={<PaymentResult />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
