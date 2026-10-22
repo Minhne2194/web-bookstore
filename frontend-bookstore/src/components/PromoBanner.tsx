@@ -488,7 +488,7 @@ function CouponBanner() {
 
 export function PromoBanner() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-10 space-y-5">
+    <section className="relative z-10 max-w-7xl mx-auto px-4 -mt-10 md:-mt-14 pb-10 space-y-5">
       {/* Hero Slideshow */}
       <HeroBanner />
 

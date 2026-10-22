@@ -257,10 +257,14 @@ export function Home() {
           >
             <div className="grid grid-cols-2 gap-4">
               {featuredBooks[0] && (
-                <SafeImage src={featuredBooks[0].cover_url || 'https://placehold.co/300x450'} className="w-48 rounded-xl shadow-2xl -rotate-6 transform hover:rotate-0 transition-transform duration-500 object-cover aspect-2/3" alt={featuredBooks[0].title} />
+                <Link to={`/book/${featuredBooks[0].book_id}`} className="block">
+                  <SafeImage src={featuredBooks[0].cover_url || 'https://placehold.co/300x450'} className="w-48 rounded-xl shadow-2xl -rotate-6 transform hover:rotate-0 transition-transform duration-500 object-cover aspect-2/3" alt={featuredBooks[0].title} />
+                </Link>
               )}
               {featuredBooks[1] && (
-                <SafeImage src={featuredBooks[1].cover_url || 'https://placehold.co/300x450'} className="w-48 rounded-xl shadow-2xl rotate-6 translate-y-8 transform hover:rotate-0 transition-transform duration-500 object-cover aspect-2/3" alt={featuredBooks[1].title} />
+                <Link to={`/book/${featuredBooks[1].book_id}`} className="block">
+                  <SafeImage src={featuredBooks[1].cover_url || 'https://placehold.co/300x450'} className="w-48 rounded-xl shadow-2xl rotate-6 translate-y-8 transform hover:rotate-0 transition-transform duration-500 object-cover aspect-2/3" alt={featuredBooks[1].title} />
+                </Link>
               )}
             </div>
           </motion.div>
