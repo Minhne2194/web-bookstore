@@ -194,5 +194,6 @@ playwright.config.ts
 *.html
 *.png
 *.js
+!backend-bookstore/scripts/crawler/fahasa-catalog.js
 *.docx
 *.py
