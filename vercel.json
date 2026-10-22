@@ -1,0 +1,6 @@
+{
+  "installCommand": "echo 'skip root install (monorepo)'",
+  "buildCommand": "cd frontend-bookstore && npm ci && npm run build",
+  "outputDirectory": "frontend-bookstore/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
