@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, ChevronLeft, ChevronRight, ShoppingCart, Sparkles, TrendingUp, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingCart, Sparkles, TrendingUp, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { SafeImage } from '../components/SafeImage';
@@ -231,48 +230,8 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-dark-bg pb-20 transition-colors duration-300">
-      {/* ── Hero ── */}
-      <section className="relative bg-indigo-950 text-white overflow-hidden py-16 md:py-24">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://picsum.photos/id/1073/1920/1080')] bg-cover bg-center mix-blend-overlay" />
-        <div className="max-w-7xl mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <h1 className="text-4xl md:text-6xl font-serif font-bold leading-tight mb-6 drop-shadow-md">
-              {t('home.heroTitle')}<br /><span className="text-indigo-400">{t('home.heroTitleHighlight')}</span>
-            </h1>
-            <p className="text-lg text-indigo-100 mb-8 max-w-md hidden md:block">
-              {t('home.heroDescription')}
-            </p>
-            <Link
-              to="/search"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-950 font-bold rounded-full hover:bg-indigo-50 transition-colors"
-            >
-              {t('home.buyNow')} <ArrowRight className="w-5 h-5" />
-            </Link>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden md:flex justify-end"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              {featuredBooks[0] && (
-                <Link to={`/book/${featuredBooks[0].book_id}`} className="block">
-                  <SafeImage src={featuredBooks[0].cover_url || 'https://placehold.co/300x450'} className="w-48 rounded-xl shadow-2xl -rotate-6 transform hover:rotate-0 transition-transform duration-500 object-cover aspect-2/3" alt={featuredBooks[0].title} />
-                </Link>
-              )}
-              {featuredBooks[1] && (
-                <Link to={`/book/${featuredBooks[1].book_id}`} className="block">
-                  <SafeImage src={featuredBooks[1].cover_url || 'https://placehold.co/300x450'} className="w-48 rounded-xl shadow-2xl rotate-6 translate-y-8 transform hover:rotate-0 transition-transform duration-500 object-cover aspect-2/3" alt={featuredBooks[1].title} />
-                </Link>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Promo Banner ── */}
-      <PromoBanner />
+      {/* ── Hero + Slideshow khuyến mãi (toàn trang) ── */}
+      <PromoBanner featuredBooks={featuredBooks} />
 
       {/* ── Category Cards ── */}
       <section className="max-w-7xl mx-auto px-4 py-12">
