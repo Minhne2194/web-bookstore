@@ -22,6 +22,8 @@ services:
         sync: false
       - key: REDIS_PORT
         sync: false
+      - key: REDIS_USERNAME
+        sync: false
       - key: REDIS_PASSWORD
         sync: false
       - key: REDIS_TLS
