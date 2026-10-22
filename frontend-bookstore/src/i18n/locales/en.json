@@ -362,7 +362,7 @@
     "slide1Cta": "Shop Now",
     "slide1Tag": "Save up to 50%",
     "slide2Badge": "🆕 New Release",
-    "slide2Title": "New Books May 2026",
+    "slide2Title": "New Books {{year}}",
     "slide2Sub": "Hundreds of new titles arrived",
     "slide2Desc": "Discover the latest works from domestic and international authors.",
     "slide2Cta": "View Now",

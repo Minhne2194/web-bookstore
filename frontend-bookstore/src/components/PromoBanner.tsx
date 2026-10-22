@@ -129,7 +129,7 @@ function HomeSlideshow({ featuredBooks }: { featuredBooks: any[] }) {
         </span>
 
         <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-2">
-          {t(`promoBanner.${slide.titleKey}`)}
+          {t(`promoBanner.${slide.titleKey}`, { year: new Date().getFullYear() })}
         </h2>
 
         <p className="text-base md:text-lg font-medium mb-2" style={{ color: slide.accentLight }}>
