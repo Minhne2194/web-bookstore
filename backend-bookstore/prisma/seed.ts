@@ -103,8 +103,8 @@ async function main() {
   console.log('[seed] Loading catalog JSON...');
 
   const outputDir = path.join(__dirname, '../scripts/crawler/output');
-  const booksFile = path.join(outputDir, 'books_seed.json');
-  const catsFile = path.join(outputDir, 'categories_seed.json');
+  const booksFile = path.join(outputDir, process.env.SEED_BOOKS_FILE || 'books_seed.json');
+  const catsFile = path.join(outputDir, process.env.SEED_CATEGORIES_FILE || 'categories_seed.json');
 
   if (!fs.existsSync(booksFile) || !fs.existsSync(catsFile)) {
     console.error('[seed] Missing JSON seed files.');

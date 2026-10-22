@@ -28,10 +28,10 @@ const prisma = new PrismaClient({ adapter });
 // ──────────────────────── Config ────────────────────────
 
 const CONFIG = {
-  FAKE_USER_COUNT: 500,
-  ORDER_COUNT: 10_000,
-  REVIEW_COUNT: 50_000,
-  EVENT_COUNT: 200_000,
+  FAKE_USER_COUNT: Number(process.env.SEED_USER_COUNT || 500),
+  ORDER_COUNT: Number(process.env.SEED_ORDER_COUNT || 10_000),
+  REVIEW_COUNT: Number(process.env.SEED_REVIEW_COUNT || 50_000),
+  EVENT_COUNT: Number(process.env.SEED_EVENT_COUNT || 200_000),
   BATCH_SIZE: 500,
   ORDER_DAYS_SPREAD: 180,
   EVENT_DAYS_SPREAD: 90,
