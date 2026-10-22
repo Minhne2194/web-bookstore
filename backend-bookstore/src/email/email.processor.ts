@@ -9,29 +9,24 @@ export class EmailProcessor extends WorkerHost implements OnModuleInit {
   private transporter: nodemailer.Transporter;
 
   async onModuleInit() {
-    if (process.env.SMTP_HOST) {
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-    } else {
-      this.logger.log('No SMTP config found, generating Ethereal test account...');
-      const testAccount = await nodemailer.createTestAccount();
-      this.transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      this.logger.log(`Ethereal test account created: ${testAccount.user}`);
+    try {
+      if (process.env.SMTP_HOST) {
+        this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT) || 587,
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+      } else {
+        this.logger.log('No SMTP config — dùng JSON transport (email lưu dạng JSON, không gửi ra ngoài)');
+        this.transporter = nodemailer.createTransport({ jsonTransport: true });
+      }
+    } catch (err) {
+      this.logger.warn('Khởi tạo SMTP lỗi, dùng JSON transport:', err);
+      this.transporter = nodemailer.createTransport({ jsonTransport: true });
     }
   }
 
