@@ -3,7 +3,7 @@ FROM node:22-slim AS build
 WORKDIR /app
 
 COPY package*.json ./
-# Skip Chrome download: puppeteer has no musl build, and the API never uses it at runtime
+# Skip Chrome download: chỉ crawler cần Chrome, API không dùng ở runtime
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 RUN npm ci
 
@@ -12,9 +12,37 @@ COPY prisma/ prisma/
 COPY prisma.config.ts ./
 RUN npx prisma generate
 
-# Compile NestJS to dist/ (entry: dist/src/main.js — tsc infers rootDir from root-level ts files)
+# Compile NestJS to dist/ (entry: dist/src/main.js)
+# Tạo các file cấu hình build ngay trong image để không phụ thuộc build context
 COPY src/ src/
-COPY nest-cli.json tsconfig.json tsconfig.build.json ./
+RUN printf '%s\n' '{"$schema":"https://json.schemastore.org/nest-cli","collection":"@nestjs/schematics","sourceRoot":"src","compilerOptions":{"deleteOutDir":true}}' > nest-cli.json
+RUN printf '%s\n' \
+  '{' \
+  '  "compilerOptions": {' \
+  '    "module": "nodenext",' \
+  '    "moduleResolution": "nodenext",' \
+  '    "resolvePackageJsonExports": true,' \
+  '    "esModuleInterop": true,' \
+  '    "isolatedModules": true,' \
+  '    "declaration": true,' \
+  '    "removeComments": true,' \
+  '    "emitDecoratorMetadata": true,' \
+  '    "experimentalDecorators": true,' \
+  '    "allowSyntheticDefaultImports": true,' \
+  '    "target": "ES2023",' \
+  '    "sourceMap": true,' \
+  '    "outDir": "./dist",' \
+  '    "incremental": true,' \
+  '    "skipLibCheck": true,' \
+  '    "strictNullChecks": true,' \
+  '    "forceConsistentCasingInFileNames": true,' \
+  '    "noImplicitAny": false,' \
+  '    "strictBindCallApply": false,' \
+  '    "noFallthroughCasesInSwitch": false' \
+  '  }' \
+  '}' \
+  > tsconfig.json
+RUN printf '%s\n' '{"extends":"./tsconfig.json","exclude":["node_modules","test","dist","**/*spec.ts"]}' > tsconfig.build.json
 RUN npm run build
 
 # ── Runtime stage ───────────────────────────────────────────
