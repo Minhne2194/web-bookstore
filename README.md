@@ -2,6 +2,13 @@
 
 Đồ án xây dựng website thương mại điện tử chuyên về sách, cho phép người dùng tìm kiếm, mua sách trực tuyến và quản lý đơn hàng. Hệ thống cung cấp phân hệ khách hàng (storefront) và phân hệ quản trị viên (admin panel).
 
+> 🌐 **Bản đang chạy thật**
+> - Frontend (Vercel): **https://frontend-bookstore.vercel.app**
+> - Backend API (Render): **https://bookstore-api-xquk.onrender.com** — health check `/health`
+> - Tài khoản demo: `admin@bookstore.com` / `admin123` · `customer@bookstore.com` / `customer123`
+>
+> ⏳ Backend dùng Render free nên **ngủ sau 15 phút** không có request; lần truy cập đầu có thể chậm 30–50 giây (UptimeRobot ping `/health` mỗi 5 phút để giữ ấm).
+
 ---
 
 ## ⚡ Chạy Nhanh (1 Lệnh)
@@ -80,8 +87,10 @@ Biến môi trường cho container backend được inject trực tiếp trong 
 | **Frontend** | React 19 + TypeScript 6.x + Vite 8.x + TailwindCSS 4 |
 | **Backend** | NestJS 11 + Prisma ORM + PostgreSQL 17 |
 | **Search Engine** | Elasticsearch 8 (với PostgreSQL fallback) |
-| **Cache/Session** | Redis 7 (giỏ hàng, session, message queue) |
+| **Cache/Session** | Redis 7 (giỏ hàng, session, message queue) — deploy: Redis Cloud free 30MB |
 | **AI Chatbot** | DeepSeek AI — trợ lý mua sắm tích hợp |
+| **Thanh toán** | COD + **PayOS (VietQR)** — 1 cổng cho cả Momo / VNPay / chuyển khoản |
+| **Triển khai** | Frontend **Vercel** · Backend **Render** · PostgreSQL **Render** · Redis **Redis Cloud** |
 
 ### Đối tượng sử dụng
 
@@ -126,10 +135,14 @@ Biến môi trường cho container backend được inject trực tiếp trong 
 
 | Công cụ | Vai trò |
 |---|---|
-| Docker Compose | PostgreSQL + Redis + Elasticsearch containers |
+| Docker Compose | PostgreSQL + Redis + Elasticsearch containers (local) |
 | Prisma Migrate | Database migration |
 | Prisma Seed | Dữ liệu mẫu (organic + synthetic) |
 | Ethereal | Email test account (dev) |
+| **Vercel** | Host frontend (SPA tĩnh), auto-deploy mỗi push |
+| **Render** | Host backend (Docker) + PostgreSQL, auto-deploy mỗi push |
+| **Redis Cloud** | Redis free 30MB cho deploy (Render không còn Redis free) |
+| **UptimeRobot** | Ping `/health` mỗi 5 phút, giữ instance Render free không ngủ |
 
 ---
 
@@ -137,14 +150,14 @@ Biến môi trường cho container backend được inject trực tiếp trong 
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                    CLIENT LAYER                           │
+│                    CLIENT LAYER           [Vercel]        │
 │   [React SPA — Vite]           [Admin Dashboard]          │
 │   Port: 5173                   Route: /admin/*            │
 │   + ChatWidget (DeepSeek AI)                              │
 └─────────────┬──────────────────────┬─────────────────────┘
               │        HTTP          │
 ┌─────────────▼──────────────────────▼─────────────────────┐
-│           API SERVER (NestJS — Port 3000)                 │
+│      API SERVER (NestJS — Port 3000)      [Render]        │
 │   Auth · Books · Cart · Orders · Payment · Reviews        │
 │   Users · Categories · Admin · Upload · Search            │
 │   Recommendation · Behavior · Email · Chat               │
@@ -153,8 +166,13 @@ Biến môi trường cho container backend được inject trực tiếp trong 
 ┌──▼──────┐ ┌──▼──────┐ ┌─────▼─────┐ ┌──────▼──────┐
 │PostgreSQL│ │  Redis  │ │Elasticsearch│ │  Uploads   │
 │ Port:5433│ │Port:6379│ │ Port:9200  │ │  /uploads   │
-└─────────┘ └─────────┘ └────────────┘ └─────────────┘
+│ [Render] │ │[Cloud]  │ │ (local)    │ └─────────────┘
+└─────────┘ └─────────┘ └────────────┘
+
+Dịch vụ ngoài: PayOS (tạo VietQR + webhook) · DeepSeek (RAG chatbot) · SMTP (email)
 ```
+
+> Trên bản deploy Render free **không chạy Elasticsearch** (không đủ RAM) → toàn bộ tìm kiếm dùng nhánh fallback PostgreSQL. Redis trên deploy là **Redis Cloud free 30MB** (`REDIS_HOST/PORT/USERNAME/PASSWORD/TLS`).
 
 ---
 
@@ -165,7 +183,7 @@ Project-BookShop-2026/
 │
 ├── package.json                # Scripts gốc: dev, build, test, ai:evaluate, docker:*
 ├── docker-compose.yml          # Full stack: PostgreSQL + Redis + Elasticsearch + backend + frontend
-├── render.yaml                 # Deploy backend + Redis + Postgres lên Render
+├── render.yaml                 # Deploy backend (Docker/Node) + Postgres lên Render
 │
 ├── .github/
 │   └── workflows/
@@ -175,9 +193,10 @@ Project-BookShop-2026/
 │   ├── prisma/
 │   │   ├── schema.prisma       # Database schema (16 models)
 │   │   ├── migrations/         # SQL migrations
-│   │   ├── seed.ts             # Seed dữ liệu mẫu (organic)
-│   │   └── seed-synthetic.ts   # Seed dữ liệu tổng hợp
+│   │   ├── seed.ts             # Seed catalog từ JSON crawler (organic)
+│   │   └── seed-synthetic.ts   # Seed dữ liệu tổng hợp (users/orders/reviews/events)
 │   ├── seed-coupon.ts          # Seed mã giảm giá
+│   ├── prisma.config.ts        # Cấu hình Prisma 7 (seed command, datasource)
 │   ├── src/
 │   │   ├── admin/              # Module quản trị (thống kê, CRUD)
 │   │   ├── auth/               # JWT authentication + guards
@@ -189,7 +208,7 @@ Project-BookShop-2026/
 │   │   ├── common/filters/     # AllExceptionsFilter (chuẩn hóa lỗi)
 │   │   ├── email/              # Email queue (BullMQ + Nodemailer)
 │   │   ├── orders/             # Quy trình đặt hàng
-│   │   ├── payment/            # MoMo, VNPay, PayOS integration
+│   │   ├── payment/            # PayOS (VietQR + webhook) + cron hủy đơn quá 15 phút
 │   │   ├── prisma/             # Prisma service (singleton)
 │   │   ├── recommendation/     # Gợi ý sách cá nhân hóa
 │   │   ├── reviews/            # Đánh giá & bình luận
@@ -200,23 +219,25 @@ Project-BookShop-2026/
 │   │   └── main.ts             # Bootstrap (CORS, ValidationPipe, ExceptionFilter)
 │   ├── test/                   # E2E test (Jest + Supertest)
 │   ├── uploads/                # Thư mục lưu ảnh upload
-│   ├── scripts/                # Crawler Fahasa + evaluate-ai.ts (benchmark AI)
+│   ├── scripts/                # Crawler Fahasa + evaluate-ai.ts + sample-catalog.ts (10% cho deploy)
 │   ├── Dockerfile              # Image production cho backend
 │   ├── docker-compose.yml      # PostgreSQL + Redis + Elasticsearch (backend local dev)
 │   ├── package.json
-│   └── .env                    # Biến môi trường (không commit)
+│   ├── .env                    # Biến môi trường (không commit)
+│   └── .env.render.txt         # DATABASE_URL của DB Render — dùng khi seed từ local (không commit)
 │
 ├── frontend-bookstore/         # React Frontend SPA
 │   ├── src/
 │   │   ├── components/         # Header, Footer, Toast, SafeImage, ChatWidget, PromoBanner
 │   │   ├── config/api.ts       # API_BASE_URL (đọc VITE_API_URL)
 │   │   ├── context/            # AuthContext, CartContext
-│   │   ├── pages/              # 12 trang chính
+│   │   ├── pages/              # 12 trang storefront + Admin
 │   │   │   ├── Home.tsx        # Trang chủ (PromoBanner, For You, Trending)
 │   │   │   ├── Search.tsx      # Tìm kiếm + lọc + facets
 │   │   │   ├── BookDetail.tsx  # Chi tiết sách + reviews + sách tương tự
 │   │   │   ├── Cart.tsx        # Giỏ hàng + mã giảm giá
-│   │   │   ├── Checkout.tsx    # Thanh toán (COD, bank, MoMo, VNPay, PayOS)
+│   │   │   ├── Checkout.tsx    # Đặt hàng (COD, bank, MoMo, VNPay → 3 online sinh VietQR PayOS)
+│   │   │   ├── PaymentProcess.tsx # Màn QR PayOS: polling 4s + đổi phương thức + hủy đơn
 │   │   │   ├── Admin.tsx       # Admin Dashboard (full CRUD + quản lý coupon)
 │   │   │   ├── Account.tsx     # Tài khoản cá nhân + lịch sử đơn hàng
 │   │   │   ├── Login.tsx       # Đăng nhập
@@ -299,15 +320,74 @@ npx prisma migrate deploy
 # Generate Prisma Client
 npx prisma generate
 
-# (Tuỳ chọn) Seed dữ liệu mẫu
-npx prisma db seed
+# (Tuỳ chọn) Seed catalog sách từ JSON crawler (cần chạy `npm run catalog:fetch` trước
+# nếu chưa có scripts/crawler/output/*.json) — 3.487 sách / 2.481 tác giả / 149 danh mục
+npm run catalog:seed
 
-# (Tuỳ chọn) Seed dữ liệu tổng hợp (synthetic)
+# (Tuỳ chọn) Seed dữ liệu tổng hợp: user, đơn, review, behavior event
 npm run db:seed:synthetic
 
 # (Tuỳ chọn) Reindex dữ liệu vào Elasticsearch
 curl -X POST http://localhost:3000/search/reindex-dev 
   -H "x-dev-secret: dev-reindex-2026"
+```
+
+#### Seed dữ liệu — 2 lớp, có tham số
+
+**Lớp 1 — catalog thật (crawler Fahasa):** `backend-bookstore/prisma/seed.ts` đọc JSON trong
+`scripts/crawler/output/`, upsert `Category` → `Author` → `Publisher` → `Book` (idempotent, chạy lại
+nhiều lần không nhân bản dữ liệu).
+
+```bash
+# 1. Cào dữ liệu (Puppeteer, có checkpoint — dừng giữa chừng vẫn tiếp tục được)
+npm run catalog:fetch            # 1 trang
+npm run catalog:fetch:full       # 10 trang
+npm run catalog:refresh          # cào + seed trong 1 lệnh
+
+# 2. Seed vào DB
+npm run catalog:seed             # = npx prisma db seed (đọc prisma.config.ts)
+```
+
+| Biến | Mặc định | Ý nghĩa |
+|---|---|---|
+| `SEED_BOOKS_FILE` | `books_seed.json` | File sách nguồn trong `scripts/crawler/output/` |
+| `SEED_CATEGORIES_FILE` | `categories_seed.json` | File danh mục nguồn |
+| `SAMPLE_PERCENT` | `10` | Tỉ lệ lấy mẫu khi chạy `sample-catalog` |
+
+**Lớp 2 — dữ liệu tổng hợp (faker):** `prisma/seed-synthetic.ts` sinh user, đơn hàng theo
+state machine, review có trọng số và behavior event.
+
+```bash
+npm run db:seed:synthetic
+```
+
+| Biến | Mặc định |
+|---|---|
+| `SEED_USER_COUNT` | `500` |
+| `SEED_ORDER_COUNT` | `10_000` |
+| `SEED_REVIEW_COUNT` | `50_000` |
+| `SEED_EVENT_COUNT` | `200_000` |
+
+Ví dụ bản nhẹ: `SEED_USER_COUNT=50 SEED_ORDER_COUNT=500 npm run db:seed:synthetic`
+
+**Lớp 3 — bản rút gọn cho deploy:** Render free không đủ chỗ cho full catalog, nên
+`scripts/sample-catalog.ts` tạo bộ **10% sách nhưng giữ nguyên toàn bộ danh mục** (chọn mẫu
+deterministic theo ISBN, không random).
+
+```bash
+npx ts-node scripts/sample-catalog.ts          # → books_seed_10pct.json + categories_seed_10pct.json
+SAMPLE_PERCENT=20 npx ts-node scripts/sample-catalog.ts   # đổi tỉ lệ
+```
+
+Seed DB Render từ máy local (dùng pattern `.env.render` — file `backend-bookstore/.env.render.txt`
+chứa `DATABASE_URL` của Render, **không commit**, đã nằm trong `.gitignore`):
+
+```bash
+cd backend-bookstore
+SEED_BOOKS_FILE=books_seed_10pct.json \
+SEED_CATEGORIES_FILE=categories_seed_10pct.json \
+DATABASE_URL="$(grep DATABASE_URL .env.render.txt | cut -d'"' -f2)" \
+npm run catalog:seed
 ```
 
 ### 4. Cấu hình Frontend
@@ -349,7 +429,8 @@ DATABASE_URL="postgresql://root:secretpassword@localhost:5433/bookstore_db?schem
 
 # JWT
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
-JWT_EXPIRES_IN="7d"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_EXPIRES_IN_DAYS=7
 
 # Redis
 REDIS_HOST="127.0.0.1"
@@ -376,24 +457,28 @@ SMTP_SECURE="false"
 SMTP_USER=""
 SMTP_PASS=""
 
-# MoMo Sandbox (tuỳ chọn)
+# MoMo / VNPay Sandbox (tuỳ chọn — CHỈ dùng cho endpoint legacy /payment/momo/*, /payment/vnpay/*.
+# UI hiện tại KHÔNG gọi 2 nhóm này: mọi lựa chọn online đều đi qua PayOS bên dưới.)
 MOMO_PARTNER_CODE="MOMOBKUN20180810"
 MOMO_ACCESS_KEY="klm05673644177"
 MOMO_SECRET_KEY="at67qH6mk8w5Y1n71y"
 MOMO_RETURN_URL="http://localhost:5173/payment/result"
 MOMO_NOTIFY_URL="https://<your-ngrok>.ngrok-free.dev/payment/momo/callback"
 
-# VNPay Sandbox (tuỳ chọn)
 VNPAY_TMN_CODE="2QX1X6YX"
 VNPAY_HASH_SECRET="CHXFTSLDRNNDSZMZSXWIXLXNMDHOHSTZ"
 VNPAY_URL="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
 VNPAY_RETURN_URL="http://localhost:5173/payment/result"
 VNPAY_NOTIFY_URL="https://<your-ngrok>.ngrok-free.dev/payment/vnpay/callback"
 
-# PayOS Sandbox (tuỳ chọn)
+# PayOS (cổng thanh toán DUY NHẤT cho mọi phương thức online — sinh VietQR)
+# Lấy 3 key tại https://my.payos.vn → Kênh thanh toán → Thông tin tích hợp
 PAYOS_CLIENT_ID=""
 PAYOS_API_KEY=""
 PAYOS_CHECKSUM_KEY=""
+PAYOS_RETURN_URL="http://localhost:5173/payment/result"   # trình duyệt quay về khi trả tiền xong
+PAYOS_CANCEL_URL="http://localhost:5173/payment/result"   # trình duyệt quay về khi bấm hủy
+PAYOS_WEBHOOK_URL="https://<your-backend-domain>/payment/payos/callback"
 ```
 
 > ⚠️ **Lưu ý**: File `.env` **không được commit** lên Git (đã có trong `.gitignore`).
@@ -404,8 +489,10 @@ PAYOS_CHECKSUM_KEY=""
 |---|---|---|
 | `DATABASE_URL` | ✅ | Chuỗi kết nối PostgreSQL (phải khớp user/password/db của container đang chạy) |
 | `JWT_SECRET` | ✅ | Khóa ký JWT — đổi giá trị khi lên production |
-| `JWT_EXPIRES_IN` | — | Thời hạn token, mặc định `7d` |
+| `JWT_EXPIRES_IN` | — | Thời hạn access token, mặc định **`15m`** (`auth.module.ts`). Frontend tự refresh khi gặp 401 |
+| `JWT_REFRESH_EXPIRES_IN_DAYS` | — | Số ngày sống của `refresh_token` (bảng `user_sessions`), mặc định `7` |
 | `REDIS_HOST` / `REDIS_PORT` | ✅ | Redis dùng cho **giỏ hàng** (`cart.service.ts`), **queue email BullMQ** (`app.module.ts`) và orders. Mặc định `127.0.0.1` / `6379` |
+| `REDIS_USERNAME` / `REDIS_PASSWORD` / `REDIS_TLS` | — | Chỉ cần khi dùng Redis Cloud (deploy). Đặt qua dashboard Render; local để trống |
 | `ELASTICSEARCH_NODE` / `ELASTICSEARCH_INDEX` | — | Thiếu/hỏng ES thì search tự fallback sang PostgreSQL |
 | `PORT` | — | Cổng backend, mặc định `3000` |
 | `FRONTEND_URL` | — | **CORS origin(s)** cho backend. Nhiều origin thì cách nhau bằng **dấu phẩy**, khoảng trắng được tự cắt. VD: `http://localhost:5173,https://your-app.vercel.app`. Không khai báo → mặc định `http://localhost:5173` + `http://localhost:3000`. Đọc tại `backend-bookstore/src/main.ts` |
@@ -414,7 +501,13 @@ PAYOS_CHECKSUM_KEY=""
 | `DEEPSEEK_MODEL` | — | Model DeepSeek, mặc định `deepseek-chat` |
 | `DEV_SECRET` | — | Secret cho endpoint `POST /search/reindex-dev` (header `x-dev-secret`) |
 | `SMTP_*` | — | Thiếu thì dùng Ethereal test account |
-| `MOMO_*`, `VNPAY_*`, `PAYOS_*` | — | Keys sandbox cho thanh toán online |
+| `PAYOS_CLIENT_ID` / `PAYOS_API_KEY` / `PAYOS_CHECKSUM_KEY` | — (✅ nếu muốn bật thanh toán online) | Bộ 3 khoá PayOS, đọc trong constructor `PaymentService`. **Thiếu → `this.payOS = null`**, API trả `"Không thể kết nối đến cổng thanh toán PayOS"` và đơn COD vẫn chạy bình thường |
+| `PAYOS_RETURN_URL` | — | Trình duyệt quay về sau khi thanh toán xong. Mặc định `http://localhost:5173/payment/result`. Deploy: `https://frontend-bookstore.vercel.app/payment/result` |
+| `PAYOS_CANCEL_URL` | — | Trình duyệt quay về khi bấm hủy trên trang PayOS. Mặc định như trên |
+| `PAYOS_WEBHOOK_URL` | — | URL công khai để PayOS gọi webhook, dạng `<backend>/payment/payos/callback`. Deploy: `https://bookstore-api-xquk.onrender.com/payment/payos/callback` (khai báo URL này trong dashboard PayOS) |
+| `SEED_BOOKS_FILE` / `SEED_CATEGORIES_FILE` | — | Chọn file JSON nguồn khi seed catalog (mặc định `books_seed.json` / `categories_seed.json`) |
+| `SEED_USER_COUNT` / `SEED_ORDER_COUNT` / `SEED_REVIEW_COUNT` / `SEED_EVENT_COUNT` | — | Số lượng bản ghi `db:seed:synthetic` sinh ra (mặc định 500 / 10.000 / 50.000 / 200.000) |
+| `MOMO_*`, `VNPAY_*` | — | **Legacy**: chỉ phục vụ `/payment/momo/*` và `/payment/vnpay/*`. UI hiện không dùng — mọi phương thức online đều qua PayOS |
 
 Danh sách đầy đủ luôn nằm trong `backend-bookstore/.env.example` — nên copy từ đó và chỉ sửa giá trị.
 
@@ -469,7 +562,7 @@ Xem bảng port và biến môi trường ở mục [Chạy Nhanh](#-chạy-nhan
 | 🏷️ **Bộ lọc** | Lọc theo thể loại, khoảng giá, đánh giá, ngôn ngữ, sắp xếp (bestseller, mới nhất, giá, rating) |
 | 📖 **Chi tiết sách** | Thông tin đầy đủ, ảnh bìa, đánh giá & bình luận, sách tương tự |
 | 🛒 **Giỏ hàng** | Thêm/xóa/sửa số lượng, Redis-backed, mã giảm giá |
-| 💳 **Thanh toán** | COD, Chuyển khoản, MoMo, VNPay, PayOS |
+| 💳 **Thanh toán** | COD + 3 phương thức online (Chuyển khoản, MoMo, VNPay) đều sinh **một mã VietQR qua PayOS**; trang QR có polling 4s, đổi phương thức, hủy đơn |
 | 👤 **Tài khoản** | Đăng ký/đăng nhập, chỉnh sửa profile, quản lý địa chỉ, lịch sử đơn hàng, email xác nhận |
 | ⭐ **Đánh giá** | Rating 1–5 sao, viết bình luận, vote hữu ích |
 | 🤖 **AI Chatbot** | Trợ lý mua sắm DeepSeek AI (SSE streaming), gợi ý sách, tra cứu đơn hàng |
@@ -565,18 +658,25 @@ Base URL mặc định: `http://localhost:3000`
 | `POST` | `/cart/add` | Thêm sách vào giỏ | ✅ |
 | `PUT` | `/cart/update` | Cập nhật số lượng | ✅ |
 | `DELETE` | `/cart/remove/:bookId` | Xóa sách khỏi giỏ | ✅ |
-| `POST` | `/orders/checkout` | Đặt hàng | ✅ |
+| `POST` | `/orders/checkout` | Đặt hàng. Online payment → trả `requiresPayment: true` kèm `order.order_id` | ✅ |
 | `GET` | `/orders/my-orders` | Lịch sử đơn hàng | ✅ |
+| `GET` | `/orders/:id/payment-info` | Trạng thái thanh toán của 1 đơn — frontend polling 4 giây tại `/payment/process/:orderId` | ✅ |
+| `POST` | `/orders/:id/change-payment` | Đổi phương thức thanh toán của đơn đang `pending` (body `{"payment_method":"cod"}`) — **không** tạo đơn mới | ✅ |
+| `POST` | `/orders/:id/cancel` | Hủy đơn chờ thanh toán (`status: cancelled` + `payment_status: failed`) + **hoàn kho**. Chỉ áp dụng cho đơn còn `pending` | ✅ |
 
 ### Payment
 
 | Method | Endpoint | Mô tả | Auth |
 |---|---|---|---|
-| `POST` | `/payment/momo/create` | Tạo link thanh toán MoMo | ✅ |
-| `POST` | `/payment/vnpay/create` | Tạo link thanh toán VNPay | ✅ |
-| `POST` | `/payment/payos/create` | Tạo link thanh toán PayOS | ✅ |
-| `POST` | `/payment/momo/callback` | MoMo IPN callback | ❌ |
-| `GET` | `/payment/vnpay/callback` | VNPay IPN callback | ❌ |
+| `POST` | `/payment/payos/create` | **Cổng chính** — tạo mã VietQR PayOS cho đơn (body `{ orderId, amount }`), trả `payUrl`, `qrCode`, `paymentLinkId`, `orderCode` | ✅ |
+| `POST` | `/payment/payos/callback` | **Webhook PayOS** gọi về — verify chữ ký HMAC rồi cập nhật `payment_status: paid` | ❌ (verify chữ ký) |
+| `POST` | `/payment/reconcile` | Đối soát thủ công: hủy đơn online treo + hoàn kho | 🔒 Admin |
+| `GET` | `/payment/result` | Redirect về trang kết quả thanh toán phía frontend | ❌ |
+| `POST` | `/payment/momo/create` | *Legacy* — tạo link MoMo trực tiếp (UI không dùng) | ✅ |
+| `GET` | `/payment/momo/query/:orderId` | *Legacy* — truy vấn trạng thái MoMo | ✅ |
+| `POST` | `/payment/momo/callback` | *Legacy* — MoMo IPN callback | ❌ |
+| `POST` | `/payment/vnpay/create` | *Legacy* — tạo link VNPay trực tiếp (UI không dùng) | ✅ |
+| `GET` | `/payment/vnpay/callback` | *Legacy* — VNPay IPN callback | ❌ |
 
 ### Reviews
 
@@ -650,6 +750,16 @@ coupons (độc lập — áp dụng khi checkout)
 | `UserBehaviorEvent` | Tracking hành vi người dùng (view, add_to_cart, wishlist, purchase, search) |
 | `Coupon` | Mã giảm giá (percentage, fixed_amount, free_shipping) |
 
+### Dữ liệu thực tế trong hệ thống
+
+| Nguồn | Nội dung | Quy mô |
+|---|---|---|
+| **Crawler Fahasa** (Puppeteer, có checkpoint) | Catalog sách thật: sách, tác giả, NXB, danh mục, giá, ảnh bìa | **3.487 sách · 2.481 tác giả · 149 danh mục** (đang cào bổ sung → 5.000+) |
+| **Seed synthetic** (faker) | User, đơn hàng theo state machine, review có trọng số, behavior event | **500 users · 10.000 đơn · 50.000 review · 200.000 event** |
+| **Bản deploy Render** | Catalog rút gọn 10% (`scripts/sample-catalog.ts`) | **~350 sách**, giữ nguyên 149 danh mục |
+
+Local chạy **full catalog + full synthetic**; Render chỉ nạp **10% catalog** vì DB free giới hạn dung lượng.
+
 ### Enums
 
 | Enum | Giá trị |
@@ -669,21 +779,92 @@ coupons (độc lập — áp dụng khi checkout)
 
 ## 💳 Thanh Toán Online
 
-Hệ thống hỗ trợ 4 phương thức thanh toán (môi trường **Sandbox/Test**):
+### 4 lựa chọn — 1 cổng duy nhất (PayOS)
 
-| Phương thức | Trạng thái | Ghi chú |
+| Lựa chọn trên UI | Giá trị enum | Cách xử lý |
 |---|---|---|
-| **MoMo** | ✅ Hoạt động | Sandbox keys có sẵn trong `.env` |
-| **VNPay** | ✅ Hoạt động | Sandbox keys có sẵn trong `.env` |
-| **PayOS** | ✅ Hoạt động | Cần đăng ký PayOS Sandbox keys |
-| **COD** | ✅ Hoạt động | Thanh toán khi nhận hàng |
-| **Chuyển khoản** | ✅ Hoạt động | Xác nhận thủ công |
+| **Thanh toán khi nhận hàng (COD)** | `cod` | Tạo đơn → trừ tồn kho → xong. Không gọi cổng nào |
+| **Chuyển khoản ngân hàng** | `bank_transfer` | Đơn `pending` → sinh **VietQR qua PayOS** |
+| **Momo** | `momo` | Đơn `pending` → sinh **VietQR qua PayOS** |
+| **VNPay** | `vnpay` | Đơn `pending` → sinh **VietQR qua PayOS** |
 
-> 📌 Để nhận callback (IPN) từ MoMo/VNPay khi phát triển local, cần sử dụng **ngrok** để expose localhost:
-> ```bash
-> ngrok http 3000
-> ```
-> Sau đó cập nhật `MOMO_NOTIFY_URL` và `VNPAY_NOTIFY_URL` trong `.env` với URL ngrok.
+> **Điểm cốt lõi:** 3 lựa chọn online **không gọi API Momo/VNPay trực tiếp**. Cả ba đều đi qua
+> `POST /payment/payos/create` và nhận về **cùng một mã VietQR** (PayOS gói Momo, VNPay và
+> ngân hàng sau một API). Nhờ vậy chỉ cần **một merchant, một bộ khoá, một webhook, một luồng đối soát**.
+> Nhãn Momo/VNPay vẫn giữ trong UI vì đó là thứ người mua quen nhìn.
+
+### Luồng thanh toán
+
+```
+Chọn phương thức ở /checkout
+        │
+        ▼
+POST /orders/checkout  ──►  đơn tạo trong transaction (pending, payment_status: pending)
+        │                   tồn kho trừ ngay; trả requiresPayment: true
+        ▼
+/payment/process/:orderId  ──►  POST /payment/payos/create  ──►  PayOS trả payUrl + qrCode
+        │                        (mã VietQR + số tiền + nội dung)
+        │
+        ├── Người dùng quét QR / mở payUrl ──► thanh toán
+        │
+        ▼
+PayOS gọi POST /payment/payos/callback
+        │
+        ├── payOS.webhooks.verify(body)  ── sai chữ ký ──► trả 400, không cập nhật đơn
+        ├── code !== '00' ──► payment_status: failed + status: cancelled + HOÀN KHO
+        └── code === '00' ──► payment_status: paid + status: confirmed
+        │
+        ▼
+Trang /payment/process polling /orders/:id/payment-info mỗi 4 giây ──► tự đổi sang "Đã thanh toán"
+```
+
+> Thanh toán thành công không chỉ đổi `payment_status` mà còn đẩy `status` sang **`confirmed`**;
+> thanh toán thất bại thì `payment_status: failed` + `status: cancelled` + **hoàn kho ngay**
+> (`handlePaymentFailure()`), không chờ cron.
+
+### Trang `/payment/process/:orderId`
+
+- Hiển thị **mã VietQR** + số tiền + nội dung chuyển khoản, kèm nút mở `payUrl`.
+- **Polling 4 giây** gọi `GET /orders/:id/payment-info` — không cần F5 khi webhook về.
+- **Đổi phương thức** (`POST /orders/:id/change-payment`): đổi `payment_method` trên **cùng đơn** rồi sinh QR mới; chọn COD thì chuyển sang xác nhận luôn, **không tạo đơn mới**.
+- **Hủy đơn** (`POST /orders/:id/cancel`): `status: cancelled` + `payment_status: failed` + **hoàn kho**; chỉ cho phép khi đơn còn `pending`.
+
+### Đơn bỏ ngang — cron tự dọn
+
+`PaymentService.onModuleInit()` chạy `reconcileAbandonedPayments()` **mỗi 60 giây**:
+
+- Tìm đơn có `payment_status: pending`, `status: pending`, `payment_method IN (momo, vnpay, payos, bank_transfer)` và `created_at` quá **15 phút**.
+- Gọi `handlePaymentFailure()` cho từng đơn: `payment_status: failed` + `status: cancelled`, **hoàn lại `stock_qty`** và giảm `sold_count` cho từng item.
+- Timer được `unref()` nên không giữ process sống (không ảnh hưởng shutdown/CI).
+- Có thể gọi tay: `POST /payment/reconcile` (admin) — trả `{ reconciled, orderIds }`.
+
+### Cấu hình PayOS
+
+```env
+PAYOS_CLIENT_ID="..."
+PAYOS_API_KEY="..."
+PAYOS_CHECKSUM_KEY="..."
+PAYOS_RETURN_URL="http://localhost:5173/payment/result"
+PAYOS_CANCEL_URL="http://localhost:5173/payment/result"
+PAYOS_WEBHOOK_URL="https://<backend-domain>/payment/payos/callback"
+```
+
+- Lấy 3 khoá tại **https://my.payos.vn** → Kênh thanh toán → Thông tin tích hợp.
+- **Khai báo webhook URL** trong dashboard PayOS trỏ về `<backend>/payment/payos/callback`. Trên bản deploy: `https://bookstore-api-xquk.onrender.com/payment/payos/callback`.
+- Thiếu 3 khoá → `PaymentService` log cảnh báo và đặt `this.payOS = null`; gọi API tạo thanh toán sẽ trả **400** `"Không thể kết nối đến cổng thanh toán PayOS"`, còn đơn COD hoạt động bình thường.
+
+### Test webhook ở local
+
+PayOS cần URL công khai nên phải expose localhost:
+
+```bash
+ngrok http 3000
+# rồi khai báo https://<your-ngrok>.ngrok-free.dev/payment/payos/callback trong dashboard PayOS
+```
+
+Đơn online chưa thanh toán **quá 15 phút** sẽ bị cron tự hủy và hoàn kho — khi test cần thanh toán trong 15 phút.
+
+> ⚠️ PayOS đang ở môi trường **sandbox**: đã tạo QR thật trên bản deploy nhưng **chưa có hoàn tiền tự động** (hoàn tiền phải làm tay trên dashboard PayOS).
 
 ---
 
@@ -721,16 +902,23 @@ npx prisma migrate deploy
 # Tạo migration mới
 npx prisma migrate dev --name <tên_migration>
 
-# Seed dữ liệu mẫu (organic)
-npx prisma db seed
+# Seed catalog sách từ JSON crawler (organic — upsert idempotent)
+npm run catalog:seed
 
-# Seed dữ liệu tổng hợp (synthetic — nhiều dữ liệu hơn)
+# Seed dữ liệu tổng hợp (synthetic — users/orders/reviews/events)
 npm run db:seed:synthetic
+SEED_USER_COUNT=50 SEED_ORDER_COUNT=500 npm run db:seed:synthetic   # bản nhẹ
+
+# Tạo bộ catalog 10% cho deploy (giữ nguyên toàn bộ danh mục)
+npx ts-node scripts/sample-catalog.ts
+
+# Seed DB Render bằng bộ 10% (dùng DATABASE_URL trong .env.render.txt)
+SEED_BOOKS_FILE=books_seed_10pct.json npm run catalog:seed
 
 # Seed mã giảm giá
 npx ts-node seed-coupon.ts
 
-# Crawl dữ liệu sách từ Fahasa
+# Crawl dữ liệu sách từ Fahasa (Puppeteer, có checkpoint)
 npm run catalog:fetch            # 1 trang
 npm run catalog:fetch:batch      # 1 trang (explicit)
 npm run catalog:fetch:full       # 10 trang
@@ -857,14 +1045,45 @@ Workflow: `.github/workflows/ci.yml` — trigger khi **push lên `main`/`master`
 
 Job fail → PR bị chặn, nên cần chạy `npm test` / `npm run build` ở local trước khi push.
 
-### Deploy
+### Deploy — 2 URL đang chạy thật
 
-| Phần | Nền tảng | File cấu hình | Ghi chú |
+| Phần | Nền tảng | URL / File cấu hình | Ghi chú |
 |---|---|---|---|
-| Frontend | **Vercel** | `frontend-bookstore/vercel.json` | Rewrite `/(.*)` → `/index.html` để React Router hoạt động khi refresh/deep-link. Set biến môi trường `VITE_API_URL` = domain backend thật (nhớ: giá trị này **nhúng lúc build**, đổi phải redeploy) |
-| Backend | **Render** | `render.yaml` | Web service `bookstore-api` (runtime `docker`, build từ `backend-bookstore/Dockerfile`, plan free). Kèm Redis private service `bookstore-redis` và Postgres `bookstore-db`. `DATABASE_URL`, `REDIS_HOST`, `REDIS_PORT` lấy tự động từ các service con; `JWT_SECRET` do Render sinh; `FRONTEND_URL` và `DEEPSEEK_API_KEY` phải điền tay (`sync: false`). Health check path đang là `/` |
+| **Frontend** | **Vercel** | **https://frontend-bookstore.vercel.app** · `frontend-bookstore/vercel.json` | Rewrite `/(.*)` → `/index.html` để React Router hoạt động khi refresh/deep-link. `VITE_API_URL` = domain backend (**nhúng lúc build**, đổi phải redeploy) |
+| **Backend** | **Render** | **https://bookstore-api-xquk.onrender.com** · `render.yaml` | Node runtime, `rootDir: backend-bookstore`, plan free. Build `npm ci && npx prisma generate && npm run build`, start `npx prisma db push && node dist/src/main.js`, health check `/health` |
+| **Database** | **Render Postgres** | `bookstore-db` (plan free) | `DATABASE_URL` lấy từ service con. Free chỉ giữ **30 ngày** → phải tạo lại DB và seed lại khi hết hạn |
+| **Redis** | **Redis Cloud** | `REDIS_HOST` / `REDIS_PORT` / `REDIS_USERNAME` / `REDIS_PASSWORD` / `REDIS_TLS` | Free **30MB** (Render không còn Redis free). Điền qua dashboard Render, `sync: false` |
+| **Giữ ấm** | **UptimeRobot** | Ping `https://bookstore-api-xquk.onrender.com/health` mỗi **5 phút** | Render free ngủ sau 15 phút không có request; ping định kỳ tránh cold start 30–50 giây |
 
-Thứ tự triển khai hợp lý: deploy backend (Render) → lấy domain → điền `FRONTEND_URL` (CORS, nhiều origin cách nhau dấu phẩy) → deploy frontend (Vercel) với `VITE_API_URL` trỏ về domain đó.
+### Auto-deploy mỗi push (3 lớp)
+
+```
+git push origin main
+        │
+        ├─► GitHub Actions (ci.yml) ── backend-test (150 unit + 43 e2e + build)
+        │                             frontend-build (tsc -b && vite build)
+        │
+        ├─► Vercel Git integration ─── build & deploy frontend (kèm preview URL cho mỗi PR)
+        │
+        └─► Render blueprint ───────── rebuild backend + `prisma db push`
+```
+
+Cả 2 job CI đang **xanh**. Thứ tự triển khai lần đầu: deploy backend (Render) → lấy domain → điền `FRONTEND_URL` (CORS, nhiều origin cách nhau dấu phẩy) + `PAYOS_WEBHOOK_URL` → deploy frontend (Vercel) với `VITE_API_URL` trỏ về domain đó → khai báo webhook URL trong dashboard PayOS.
+
+### Seed dữ liệu cho bản deploy (10%)
+
+```bash
+# 1. Tạo bộ 10% từ catalog đầy đủ (giữ nguyên toàn bộ danh mục)
+cd backend-bookstore && npx ts-node scripts/sample-catalog.ts
+
+# 2. Seed thẳng vào DB Render (DATABASE_URL nằm trong .env.render.txt — không commit)
+SEED_BOOKS_FILE=books_seed_10pct.json \
+SEED_CATEGORIES_FILE=categories_seed_10pct.json \
+DATABASE_URL="$(grep DATABASE_URL .env.render.txt | cut -d'"' -f2)" \
+npm run catalog:seed
+```
+
+Local chạy **full catalog**, Render chạy **10%** để vừa giới hạn dung lượng DB free.
 
 ---
 
@@ -907,17 +1126,21 @@ Chất lượng phân loại intent và tốc độ truy hồi của chatbot đ�
 - **Fallback PostgreSQL** — tự động chuyển về PG khi Elasticsearch không khả dụng
 - **Reindex** — admin có thể reindex toàn bộ catalog
 
+> ⚠️ **Trạng thái trên bản deploy:** Render free không đủ RAM cho Elasticsearch nên production **không chạy ES** — toàn bộ tìm kiếm đang đi nhánh fallback PostgreSQL (vẫn đúng kết quả, nhưng mất facets/highlight nâng cao). Local chạy đủ ES.
+
 ---
 
 ## 🧪 Kiểm Thử (Testing)
 
 Dự án được triển khai kiểm thử toàn diện ở 3 cấp độ:
 
-| Cấp Độ | Công Cụ | Phạm Vi |
-|---|---|---|
-| **Unit Test** | Jest | Kiểm tra từng logic hàm (CartService, ReviewsService, PaymentService...) |
-| **Integration Test** | Supertest + Jest | Kiểm tra các luồng API Endpoints (Books, Auth, Cart, Orders) |
-| **System Test** | Playwright | Mô phỏng người dùng thực tế (Tìm kiếm, Giỏ hàng, Checkout) trên trình duyệt |
+| Cấp Độ | Công Cụ | Số lượng | Phạm Vi |
+|---|---|---|---|
+| **Unit Test** | Jest | **18 bộ / 150 test** ✅ | Từng service/controller: auth, books, cart, orders, **payment (PayOS)**, chat, recommendation, search, reviews, admin... (Prisma mock) |
+| **Integration Test** (API E2E) | Supertest + Jest | **5 bộ / 43 test** ✅ | `app`, `auth`, `books`, `cart`, `orders` — status code, shape response, phân quyền |
+| **System Test** (E2E UI) | Playwright | `e2e/navigation.spec.ts`, `e2e/purchase-flow.spec.ts` | Mô phỏng người dùng thực tế (tìm kiếm, giỏ hàng, checkout) trên trình duyệt |
+
+> Cả **150 unit + 43 e2e** đều chạy trong CI ở mỗi push/PR — job `backend-test` trong `.github/workflows/ci.yml`.
 
 ### Hướng Dẫn Chạy Test
 
