@@ -447,6 +447,10 @@ export class PaymentService implements OnModuleInit {
    * Handle PayOS webhook callback
    */
   async handlePayOSWebhook(body: any) {
+    if (!this.payOS) {
+      console.warn('PayOS webhook received but PayOS is not configured.');
+      return { success: false, message: 'PayOS not configured' };
+    }
     try {
       const verified = await this.payOS.webhooks.verify(body);
       const { orderCode, code, desc } = verified;
@@ -457,8 +461,10 @@ export class PaymentService implements OnModuleInit {
       });
 
       if (!order) {
-        console.error('PayOS webhook: order not found for code', orderCode);
-        throw new BadRequestException('Order not found');
+        // Trả 200 để PayOS coi webhook đã giao thành công
+        // (vd: request kiểm tra webhook của dashboard PayOS có orderCode không tồn tại)
+        console.warn('PayOS webhook: order not found for code', orderCode);
+        return { success: false, message: 'Order not found' };
       }
 
       if (code === '00') {
