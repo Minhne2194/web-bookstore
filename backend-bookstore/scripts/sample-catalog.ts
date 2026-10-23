@@ -16,8 +16,11 @@ const catsFile = path.join(outputDir, 'categories_seed.json');
 const books = JSON.parse(fs.readFileSync(booksFile, 'utf8'));
 const cats = JSON.parse(fs.readFileSync(catsFile, 'utf8'));
 
+// Loại sách không có giá hợp lệ (price = 0 khi hết hàng trên Fahasa)
+const priced = (books as any[]).filter((b) => Number(b.price) > 0);
+
 // Chọn mẫu xác định (deterministic): sắp theo isbn rồi lấy mỗi bước thứ N
-const sorted = [...books].sort((a: any, b: any) =>
+const sorted = [...priced].sort((a: any, b: any) =>
   String(a.isbn).localeCompare(String(b.isbn)),
 );
 const step = Math.max(1, Math.round(100 / PERCENT));

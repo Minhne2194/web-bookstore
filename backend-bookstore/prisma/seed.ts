@@ -149,7 +149,13 @@ async function main() {
   }
 
   console.log(`[seed] Upserting ${booksData.length} books...`);
+  let skippedCount = 0;
   for (const item of booksData) {
+    // Bỏ qua sách không có giá hợp lệ (Fahasa trả price = 0 khi hết hàng)
+    if (!item.price || Number(item.price) <= 0) {
+      skippedCount += 1;
+      continue;
+    }
     const safeIsbn = normalizeBookIsbn(item);
     const bookTitle = limitText(item.title, BOOK_TITLE_MAX_LEN, 'Untitled Book');
     const publisherName = limitText(
@@ -256,6 +262,9 @@ async function main() {
     console.log(`[seed] Imported ${bookTitle}`);
   }
 
+  if (skippedCount > 0) {
+    console.log(`[seed] Skipped ${skippedCount} books without a valid price.`);
+  }
   console.log('[seed] Catalog import complete.');
 }
 

@@ -321,7 +321,7 @@ npx prisma migrate deploy
 npx prisma generate
 
 # (Tuỳ chọn) Seed catalog sách từ JSON crawler (cần chạy `npm run catalog:fetch` trước
-# nếu chưa có scripts/crawler/output/*.json) — 3.487 sách / 2.481 tác giả / 149 danh mục
+# nếu chưa có scripts/crawler/output/*.json) — 5.263 sách / 2.967 tác giả / 157 danh mục
 npm run catalog:seed
 
 # (Tuỳ chọn) Seed dữ liệu tổng hợp: user, đơn, review, behavior event
@@ -754,9 +754,9 @@ coupons (độc lập — áp dụng khi checkout)
 
 | Nguồn | Nội dung | Quy mô |
 |---|---|---|
-| **Crawler Fahasa** (Puppeteer, có checkpoint) | Catalog sách thật: sách, tác giả, NXB, danh mục, giá, ảnh bìa | **3.487 sách · 2.481 tác giả · 149 danh mục** (đang cào bổ sung → 5.000+) |
+| **Crawler Fahasa** (Puppeteer, có checkpoint) | Catalog sách thật: sách, tác giả, NXB, danh mục, giá, ảnh bìa | **5.263 sách · 2.967 tác giả · 157 danh mục** (đã vượt mục tiêu 5.000+) |
 | **Seed synthetic** (faker) | User, đơn hàng theo state machine, review có trọng số, behavior event | **500 users · 10.000 đơn · 50.000 review · 200.000 event** |
-| **Bản deploy Render** | Catalog rút gọn 10% (`scripts/sample-catalog.ts`) | **~350 sách**, giữ nguyên 149 danh mục |
+| **Bản deploy Render** | Catalog rút gọn 10% (`scripts/sample-catalog.ts`) | **504 sách**, giữ nguyên toàn bộ 157 danh mục |
 
 Local chạy **full catalog + full synthetic**; Render chỉ nạp **10% catalog** vì DB free giới hạn dung lượng.
 
