@@ -86,10 +86,12 @@ export function Header() {
     };
   }, [searchQuery]);
 
-  const excludedRoot = categories.find(c => c.slug === 'sach-ngoai-van')?.category_id;
+  const hiddenNavSlugs = ['sach-ngoai-van', 'dam-my'];
   const excludedIds = new Set<string>();
-  if (excludedRoot) {
-    excludedIds.add(excludedRoot);
+  categories
+    .filter(c => hiddenNavSlugs.includes(c.slug))
+    .forEach(c => excludedIds.add(c.category_id));
+  if (excludedIds.size > 0) {
     let changed = true;
     while (changed) {
       changed = false;
@@ -273,7 +275,7 @@ export function Header() {
             {t('header.allBooks')}
           </Link>
           <div className="h-4 w-px bg-slate-300"></div>
-          {topLevelCategories.slice(0, 8).map(cat => (
+          {topLevelCategories.slice(0, 7).map(cat => (
             <Link
               key={cat.category_id}
               to={`/search?category=${cat.category_id}`}
