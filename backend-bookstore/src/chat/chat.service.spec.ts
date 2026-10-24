@@ -264,5 +264,30 @@ describe('ChatService', () => {
       expect(text).toContain('Xem chi tiết');
       expect(text).not.toContain('❌');
     });
+
+    it('build context lỗi (DB down) → trả lời cố định, không gọi LLM để tránh bịa sách', async () => {
+      mockPrisma.book.findMany.mockRejectedValue(new Error('DB down'));
+      const fetchSpy = jest.spyOn(globalThis, 'fetch');
+
+      const { text } = await collectChunks(
+        service.chat('tìm sách lập trình', [], undefined),
+      );
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(text).toContain('chưa tải được dữ liệu sách');
+      expect(text).not.toContain('/book/');
+    });
+
+    it('không có sách nào khớp → trả lời cố định, không gọi LLM', async () => {
+      mockPrisma.book.findMany.mockResolvedValue([]);
+      const fetchSpy = jest.spyOn(globalThis, 'fetch');
+
+      const { text } = await collectChunks(
+        service.chat('tìm sách lập trình', [], undefined),
+      );
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(text).toContain('chưa tìm thấy cuốn nào phù hợp');
+    });
   });
 });

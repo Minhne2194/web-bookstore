@@ -98,10 +98,11 @@ Nhiệm vụ:
 
 Quy tắc bắt buộc:
 - Trả lời bằng tiếng Việt, thân thiện và ngắn gọn (tối đa 300 từ)
-- Khi gợi ý sách, LUÔN bao gồm: tên sách, giá (định dạng VNĐ), đánh giá sao, và đường dẫn dạng [Xem chi tiết](/book/ID)
+- Chỉ được giới thiệu những cuốn sách CÓ TRONG phần NGỮ CẢNH DỮ LIỆU HỆ THỐNG. Không có trong ngữ cảnh thì không được nhắc tới.
+- Khi gợi ý sách, LUÔN bao gồm: tên sách, giá (định dạng VNĐ), đánh giá sao, và đường dẫn dạng [Xem chi tiết](/book/ID) — lấy nguyên văn từ ngữ cảnh
 - Format giá: 125.000đ (dùng dấu chấm phân cách nghìn)
-- Nếu không tìm thấy thông tin, nói rõ và đề xuất cách khác
-- TUYỆT ĐỐI không bịa thêm thông tin sách không có trong context
+- TUYỆT ĐỐI không bịa tên sách, giá, đánh giá, mã giảm giá hay đường link. Link chi tiết chỉ được copy từ ngữ cảnh, KHÔNG tự chế ra (/book/101 là sai).
+- Nếu ngữ cảnh không có sách phù hợp: nói rõ là chưa tìm thấy trong hệ thống và hướng dẫn khách dùng thanh tìm kiếm ở đầu trang. Không được đoán bừa.
 - Khi user hỏi về đơn hàng mà chưa đăng nhập, yêu cầu đăng nhập tại [đây](/login)
 - Sử dụng emoji phù hợp để làm nội dung sinh động`;
   }
@@ -488,6 +489,7 @@ Bạn có thể thử hỏi mình:
 
     // Step 2: Build context
     let context = '';
+    let contextFailed = false;
     try {
       switch (intent) {
         case 'book_search':
@@ -512,7 +514,17 @@ Bạn có thể thử hỏi mình:
       }
     } catch (err) {
       this.logger.error('Context build error:', err);
-      context = 'Không thể tải dữ liệu ngữ cảnh lúc này.';
+      contextFailed = true;
+    }
+
+    // Không có dữ liệu thật → trả lời cố định, tuyệt đối không để LLM tự bịa sách
+    if (contextFailed) {
+      yield 'Hiện mình chưa tải được dữ liệu sách từ hệ thống nên chưa thể tư vấn chính xác. Bạn thử lại sau ít phút, hoặc dùng thanh tìm kiếm ở đầu trang nhé! 😊';
+      return;
+    }
+    if (intent === 'book_search' && context.startsWith('Không tìm thấy sách phù hợp')) {
+      yield 'Mình chưa tìm thấy cuốn nào phù hợp trong hệ thống. Bạn thử từ khoá khác, hoặc dùng thanh tìm kiếm ở đầu trang để lọc theo danh mục và giá nhé! 😊';
+      return;
     }
 
     // Step 3: Không có API key → trả lời bằng Local RAG Fallback
@@ -527,7 +539,7 @@ Bạn có thể thử hỏi mình:
       { role: 'system', content: this.buildSystemPrompt() },
       {
         role: 'system',
-        content: `--- NGỮ CẢNH DỮ LIỆU HỆ THỐNG ---\n${context}\n--- KẾT THÚC NGỮ CẢNH ---`,
+        content: `--- NGỮ CẢNH DỮ LIỆU HỆ THỐNG ---\n${context}\n--- KẾT THÚC NGỮ CẢNH ---\n\nNHẮC LẠI QUY TẮC:\n1. Chỉ nhắc tới sách/giá/khuyến mãi có trong ngữ cảnh trên.\n2. Link chi tiết phải copy nguyên văn dạng /book/<uuid> từ ngữ cảnh; không tự tạo link.\n3. Ngữ cảnh không có sách phù hợp thì nói chưa tìm thấy và hướng dẫn dùng thanh tìm kiếm.`,
       },
       ...conversationHistory.slice(-8), // Keep last 8 turns
       { role: 'user', content: message },
@@ -551,7 +563,7 @@ Bạn có thể thử hỏi mình:
           model: this.MODEL,
           messages,
           stream: true,
-          temperature: 0.7,
+          temperature: 0.3,
           max_tokens: 1024,
         }),
         signal: controller.signal,
