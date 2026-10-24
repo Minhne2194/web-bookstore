@@ -86,8 +86,24 @@ export function Header() {
     };
   }, [searchQuery]);
 
-  const level2Categories = categories.filter(c => c.level === 2);
-  const topLevelCategories = level2Categories.length > 0 ? level2Categories : categories.filter(c => c.level === 1);
+  const excludedRoot = categories.find(c => c.slug === 'sach-ngoai-van')?.category_id;
+  const excludedIds = new Set<string>();
+  if (excludedRoot) {
+    excludedIds.add(excludedRoot);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      categories.forEach(c => {
+        if (c.parent_id && excludedIds.has(c.parent_id) && !excludedIds.has(c.category_id)) {
+          excludedIds.add(c.category_id);
+          changed = true;
+        }
+      });
+    }
+  }
+  const visibleCategories = categories.filter(c => !excludedIds.has(c.category_id));
+  const level2Categories = visibleCategories.filter(c => c.level === 2);
+  const topLevelCategories = level2Categories.length > 0 ? level2Categories : visibleCategories.filter(c => c.level === 1);
 
   const categoryLabel = (cat: Category) => {
     const key = `categories.${cat.slug}`;

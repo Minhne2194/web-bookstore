@@ -105,7 +105,31 @@ export function Search() {
             try {
                 const res = await fetch(`${API}/categories`);
                 const json = await res.json();
-                const nextCategories = Array.isArray(json) ? json : [];
+                const rawCategories = Array.isArray(json) ? json : [];
+                const excludedRoot = rawCategories.find(
+                    (category: Category) => category.slug === 'sach-ngoai-van',
+                )?.category_id;
+                const excludedIds = new Set<string>();
+                if (excludedRoot) {
+                    excludedIds.add(excludedRoot);
+                    let changed = true;
+                    while (changed) {
+                        changed = false;
+                        rawCategories.forEach((category: Category) => {
+                            if (
+                                category.parent_id &&
+                                excludedIds.has(category.parent_id) &&
+                                !excludedIds.has(category.category_id)
+                            ) {
+                                excludedIds.add(category.category_id);
+                                changed = true;
+                            }
+                        });
+                    }
+                }
+                const nextCategories = rawCategories.filter(
+                    (category: Category) => !excludedIds.has(category.category_id),
+                );
                 setCategories(nextCategories);
 
                 setExpandedGroups(
