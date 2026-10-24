@@ -48,8 +48,12 @@ export class SearchService implements OnModuleInit {
   private readonly indexName = process.env.ELASTICSEARCH_INDEX || 'books_v1';
   private readonly client = new Client({
     node: process.env.ELASTICSEARCH_NODE || 'http://localhost:9200',
+    requestTimeout: 3000,
+    maxRetries: 0,
   });
   private indexReady = false;
+  private esUnavailableUntil = 0;
+  private static readonly ES_RETRY_AFTER_MS = 5 * 60 * 1000;
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -65,7 +69,9 @@ export class SearchService implements OnModuleInit {
 
   async indexBook(bookId: string) {
     try {
-      await this.ensureIndex();
+      if (!(await this.ensureIndex())) {
+        return { indexed: false };
+      }
       const book = await this.prisma.book.findUnique({
         where: { book_id: bookId },
         include: this.bookInclude(),
@@ -94,7 +100,9 @@ export class SearchService implements OnModuleInit {
 
   async removeBook(bookId: string) {
     try {
-      await this.ensureIndex();
+      if (!(await this.ensureIndex())) {
+        return { removed: false };
+      }
       await this.client.delete({
         index: this.indexName,
         id: bookId,
@@ -172,7 +180,9 @@ export class SearchService implements OnModuleInit {
     const queryText = filters.q?.trim();
 
     try {
-      await this.ensureIndex();
+      if (!(await this.ensureIndex())) {
+        return this.postgresSearch(filters, page, limit);
+      }
       if (!(await this.hasIndexedDocuments())) {
         return this.postgresSearch(filters, page, limit);
       }
@@ -203,7 +213,9 @@ export class SearchService implements OnModuleInit {
     if (!queryText) return { data: [], meta: { total: 0 } };
 
     try {
-      await this.ensureIndex();
+      if (!(await this.ensureIndex())) {
+        return this.postgresSuggest(queryText);
+      }
       if (!(await this.hasIndexedDocuments())) {
         return this.postgresSuggest(queryText);
       }
@@ -258,16 +270,25 @@ export class SearchService implements OnModuleInit {
     }
   }
 
-  private async ensureIndex() {
-    if (this.indexReady) return;
+  private async ensureIndex(): Promise<boolean> {
+    if (this.indexReady) return true;
+    if (Date.now() < this.esUnavailableUntil) return false;
 
-    await this.client.ping();
-    const exists = await this.client.indices.exists({ index: this.indexName });
-    if (!exists) {
-      await this.createIndex();
+    try {
+      await this.client.ping();
+      const exists = await this.client.indices.exists({ index: this.indexName });
+      if (!exists) {
+        await this.createIndex();
+      }
+
+      this.indexReady = true;
+      return true;
+    } catch (error) {
+      // Circuit breaker: khi Elasticsearch không khả dụng, tạm bỏ qua ES
+      // trong 5 phút để các request tiếp theo chạy thẳng PostgreSQL.
+      this.esUnavailableUntil = Date.now() + SearchService.ES_RETRY_AFTER_MS;
+      throw error;
     }
-
-    this.indexReady = true;
   }
 
   private async recreateIndex() {
