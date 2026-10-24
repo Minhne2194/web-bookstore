@@ -219,7 +219,7 @@ Project-BookShop-2026/
 │   │   └── main.ts             # Bootstrap (CORS, ValidationPipe, ExceptionFilter)
 │   ├── test/                   # E2E test (Jest + Supertest)
 │   ├── uploads/                # Thư mục lưu ảnh upload
-│   ├── scripts/                # Crawler Fahasa + evaluate-ai.ts + sample-catalog.ts (10% cho deploy)
+│   ├── scripts/                # Crawler Fahasa + evaluate-ai.ts + balance-catalog.ts (bộ deploy ~700 sách)
 │   ├── Dockerfile              # Image production cho backend
 │   ├── docker-compose.yml      # PostgreSQL + Redis + Elasticsearch (backend local dev)
 │   ├── package.json
@@ -352,7 +352,7 @@ npm run catalog:seed             # = npx prisma db seed (đọc prisma.config.ts
 |---|---|---|
 | `SEED_BOOKS_FILE` | `books_seed.json` | File sách nguồn trong `scripts/crawler/output/` |
 | `SEED_CATEGORIES_FILE` | `categories_seed.json` | File danh mục nguồn |
-| `SAMPLE_PERCENT` | `10` | Tỉ lệ lấy mẫu khi chạy `sample-catalog` |
+| `DEPLOY_SAMPLE_SIZE` | `700` | Số sách của bộ deploy khi chạy `balance-catalog` |
 
 **Lớp 2 — dữ liệu tổng hợp (faker):** `prisma/seed-synthetic.ts` sinh user, đơn hàng theo
 state machine, review có trọng số và behavior event.
@@ -371,12 +371,16 @@ npm run db:seed:synthetic
 Ví dụ bản nhẹ: `SEED_USER_COUNT=50 SEED_ORDER_COUNT=500 npm run db:seed:synthetic`
 
 **Lớp 3 — bản rút gọn cho deploy:** Render free không đủ chỗ cho full catalog, nên
-`scripts/sample-catalog.ts` tạo bộ **10% sách nhưng giữ nguyên toàn bộ danh mục** (chọn mẫu
-deterministic theo ISBN, không random).
+`scripts/balance-catalog.ts` tạo bộ **~700 sách phân bố ĐỀU theo danh mục** (khác bản cũ
+`sample-catalog.ts` lấy mỗi bước thứ N theo ISBN nên nhiều danh mục bị trống). Script đảm bảo
+mỗi danh mục cấp 2 có tối thiểu 12 sách, cấp 3 tối thiểu 2 sách, cấp 4 tối thiểu 1 sách, sau đó
+bổ sung vòng tròn cho tới đủ chỉ tiêu; đồng thời loại 2 danh mục rác ("Tới trang chủ",
+"Tất Cả Nhóm Series").
 
 ```bash
-npx ts-node scripts/sample-catalog.ts          # → books_seed_10pct.json + categories_seed_10pct.json
-SAMPLE_PERCENT=20 npx ts-node scripts/sample-catalog.ts   # đổi tỉ lệ
+npx ts-node scripts/balance-catalog.ts                    # → 700 sách
+DEPLOY_SAMPLE_SIZE=800 npx ts-node scripts/balance-catalog.ts   # đổi quy mô
+# Kết quả: scripts/crawler/output/books_seed_deploy.json + categories_seed_deploy.json
 ```
 
 Seed DB Render từ máy local (dùng pattern `.env.render` — file `backend-bookstore/.env.render.txt`
@@ -384,11 +388,19 @@ chứa `DATABASE_URL` của Render, **không commit**, đã nằm trong `.gitign
 
 ```bash
 cd backend-bookstore
-SEED_BOOKS_FILE=books_seed_10pct.json \
-SEED_CATEGORIES_FILE=categories_seed_10pct.json \
+
+# (tuỳ chọn) dọn mockup cũ: ẩn sách mẫu + xoá danh mục không có trong bộ deploy
+DATABASE_URL="$(grep DATABASE_URL .env.render.txt | cut -d'"' -f2)" \
+  npx ts-node scripts/clean-mockup-deploy.ts
+
+SEED_BOOKS_FILE=books_seed_deploy.json \
+SEED_CATEGORIES_FILE=categories_seed_deploy.json \
 DATABASE_URL="$(grep DATABASE_URL .env.render.txt | cut -d'"' -f2)" \
 npm run catalog:seed
 ```
+
+> `clean-mockup-deploy.ts` **ẩn** (`is_active = false`) chứ không xoá sách mockup, vì
+> `order_items` / `user_behavior_events` không có `onDelete: Cascade` trên `book_id`.
 
 ### 4. Cấu hình Frontend
 
@@ -756,9 +768,10 @@ coupons (độc lập — áp dụng khi checkout)
 |---|---|---|
 | **Crawler Fahasa** (Puppeteer, có checkpoint) | Catalog sách thật: sách, tác giả, NXB, danh mục, giá, ảnh bìa | **5.263 sách · 2.967 tác giả · 157 danh mục** (đã vượt mục tiêu 5.000+) |
 | **Seed synthetic** (faker) | User, đơn hàng theo state machine, review có trọng số, behavior event | **500 users · 10.000 đơn · 50.000 review · 200.000 event** |
-| **Bản deploy Render** | Catalog rút gọn 10% (`scripts/sample-catalog.ts`) | **504 sách**, giữ nguyên toàn bộ 157 danh mục |
+| **Bản deploy Render** | Catalog cân bằng (`scripts/balance-catalog.ts`) | **704 sách**, 155 danh mục, 21/21 danh mục cấp 2 đều có sách |
 
-Local chạy **full catalog + full synthetic**; Render chỉ nạp **10% catalog** vì DB free giới hạn dung lượng.
+Local chạy **full catalog + full synthetic**; Render nạp **bộ ~700 sách phân bố đều** để vừa
+giới hạn dung lượng DB free vừa đảm bảo không danh mục nào trống.
 
 ### Enums
 
@@ -909,11 +922,11 @@ npm run catalog:seed
 npm run db:seed:synthetic
 SEED_USER_COUNT=50 SEED_ORDER_COUNT=500 npm run db:seed:synthetic   # bản nhẹ
 
-# Tạo bộ catalog 10% cho deploy (giữ nguyên toàn bộ danh mục)
-npx ts-node scripts/sample-catalog.ts
+# Tạo bộ catalog ~700 sách cho deploy (phân bố đều theo danh mục)
+npx ts-node scripts/balance-catalog.ts
 
-# Seed DB Render bằng bộ 10% (dùng DATABASE_URL trong .env.render.txt)
-SEED_BOOKS_FILE=books_seed_10pct.json npm run catalog:seed
+# Seed DB Render bằng bộ deploy (dùng DATABASE_URL trong .env.render.txt)
+SEED_BOOKS_FILE=books_seed_deploy.json SEED_CATEGORIES_FILE=categories_seed_deploy.json npm run catalog:seed
 
 # Seed mã giảm giá
 npx ts-node seed-coupon.ts
@@ -1070,20 +1083,25 @@ git push origin main
 
 Cả 2 job CI đang **xanh**. Thứ tự triển khai lần đầu: deploy backend (Render) → lấy domain → điền `FRONTEND_URL` (CORS, nhiều origin cách nhau dấu phẩy) + `PAYOS_WEBHOOK_URL` → deploy frontend (Vercel) với `VITE_API_URL` trỏ về domain đó → khai báo webhook URL trong dashboard PayOS.
 
-### Seed dữ liệu cho bản deploy (10%)
+### Seed dữ liệu cho bản deploy (~700 sách, phân bố đều)
 
 ```bash
-# 1. Tạo bộ 10% từ catalog đầy đủ (giữ nguyên toàn bộ danh mục)
-cd backend-bookstore && npx ts-node scripts/sample-catalog.ts
+# 1. Tạo bộ deploy từ catalog đầy đủ (mỗi danh mục cấp 2 tối thiểu 12 sách)
+cd backend-bookstore && npx ts-node scripts/balance-catalog.ts
 
-# 2. Seed thẳng vào DB Render (DATABASE_URL nằm trong .env.render.txt — không commit)
-SEED_BOOKS_FILE=books_seed_10pct.json \
-SEED_CATEGORIES_FILE=categories_seed_10pct.json \
+# 2. (tuỳ chọn) dọn mockup cũ trên DB Render: ẩn sách mẫu + xoá danh mục rác
+DATABASE_URL="$(grep DATABASE_URL .env.render.txt | cut -d'"' -f2)" \
+  npx ts-node scripts/clean-mockup-deploy.ts
+
+# 3. Seed thẳng vào DB Render (DATABASE_URL nằm trong .env.render.txt — không commit)
+SEED_BOOKS_FILE=books_seed_deploy.json \
+SEED_CATEGORIES_FILE=categories_seed_deploy.json \
 DATABASE_URL="$(grep DATABASE_URL .env.render.txt | cut -d'"' -f2)" \
 npm run catalog:seed
 ```
 
-Local chạy **full catalog**, Render chạy **10%** để vừa giới hạn dung lượng DB free.
+Local chạy **full catalog**, Render chạy **bộ ~700 sách** để vừa giới hạn dung lượng DB free
+vừa đảm bảo mọi danh mục đều có sách thật.
 
 ---
 
