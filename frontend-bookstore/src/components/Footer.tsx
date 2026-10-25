@@ -36,11 +36,11 @@ export function Footer() {
         <div>
           <h3 className="text-white font-semibold mb-4 text-lg">{t('footer.categoriesTitle')}</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/search?category=Sách văn học" className="hover:text-indigo-400 transition-colors">{t('footer.catLiterature')}</Link></li>
-            <li><Link to="/search?category=Sách kinh tế" className="hover:text-indigo-400 transition-colors">{t('footer.catEconomics')}</Link></li>
-            <li><Link to="/search?category=Sách Tâm lý - Giới tính" className="hover:text-indigo-400 transition-colors">{t('footer.catPsychology')}</Link></li>
-            <li><Link to="/search?category=Sách thiếu nhi" className="hover:text-indigo-400 transition-colors">{t('footer.catChildren')}</Link></li>
-            <li><Link to="/search?category=Sách Học Ngoại Ngữ" className="hover:text-indigo-400 transition-colors">{t('footer.catLanguages')}</Link></li>
+            <li><Link to="/search?category=van-hoc" className="hover:text-indigo-400 transition-colors">{t('footer.catLiterature')}</Link></li>
+            <li><Link to="/search?category=kinh-te" className="hover:text-indigo-400 transition-colors">{t('footer.catEconomics')}</Link></li>
+            <li><Link to="/search?category=tam-ly-ky-nang-song" className="hover:text-indigo-400 transition-colors">{t('footer.catPsychology')}</Link></li>
+            <li><Link to="/search?category=thieu-nhi" className="hover:text-indigo-400 transition-colors">{t('footer.catChildren')}</Link></li>
+            <li><Link to="/search?category=sach-hoc-ngoai-ngu" className="hover:text-indigo-400 transition-colors">{t('footer.catLanguages')}</Link></li>
           </ul>
         </div>
 

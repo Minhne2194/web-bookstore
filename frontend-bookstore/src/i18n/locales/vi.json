@@ -235,7 +235,22 @@
     "englishComingSoonDesc": "Kho sách tiếng Anh đang được xây dựng và sẽ sớm ra mắt. Hãy đón chờ nhé!",
     "collapseCategory": "Thu gọn danh mục",
     "expandCategory": "Mở rộng danh mục",
-    "addToCart": "Thêm vào giỏ"
+    "addToCart": "Thêm vào giỏ",
+    "noBooksFound": "Không tìm thấy sách phù hợp",
+    "errorLoadingBooks": "Không tải được danh sách sách. Vui lòng thử lại.",
+    "errorLoadingCategories": "Không tải được danh mục."
+  },
+  "newBooks": {
+    "title": "Sách mới",
+    "subtitle": "Những đầu sách vừa cập bến Modern Book",
+    "add": "Thêm vào giỏ",
+    "errorLoading": "Không tải được sách mới. Vui lòng thử lại."
+  },
+  "bestSellers": {
+    "title": "Bán chạy",
+    "subtitle": "Những cuốn sách được độc giả chọn mua nhiều nhất",
+    "buyNow": "Mua ngay",
+    "errorLoading": "Không tải được danh sách bán chạy. Vui lòng thử lại."
   },
   "bookDetail": {
     "category": "Sách chuyên mục",

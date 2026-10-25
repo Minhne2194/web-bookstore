@@ -235,7 +235,22 @@
     "englishComingSoonDesc": "Our English book collection is being built and will launch soon. Stay tuned!",
     "collapseCategory": "Collapse category",
     "expandCategory": "Expand category",
-    "addToCart": "Add to cart"
+    "addToCart": "Add to cart",
+    "noBooksFound": "No matching books found",
+    "errorLoadingBooks": "Could not load books. Please try again.",
+    "errorLoadingCategories": "Could not load categories."
+  },
+  "newBooks": {
+    "title": "New Books",
+    "subtitle": "Fresh arrivals at Modern Book",
+    "add": "Add to cart",
+    "errorLoading": "Could not load new books. Please try again."
+  },
+  "bestSellers": {
+    "title": "Best Sellers",
+    "subtitle": "The books readers pick the most",
+    "buyNow": "Buy now",
+    "errorLoading": "Could not load best sellers. Please try again."
   },
   "bookDetail": {
     "category": "Book Category",
