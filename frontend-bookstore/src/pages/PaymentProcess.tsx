@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { QRCodeSVG } from 'qrcode.react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../components/Toast';
 import { API_BASE_URL } from '../config/api';
@@ -261,9 +262,6 @@ export function PaymentProcess() {
         );
     }
 
-    const qrSrc = gateway?.qrCode
-        ? (gateway.qrCode.startsWith('data:') ? gateway.qrCode : `data:image/png;base64,${gateway.qrCode}`)
-        : null;
 
     if (isPaid || isCodConfirmed) {
         return (
@@ -371,14 +369,12 @@ export function PaymentProcess() {
 
                     {gateway && (
                         <div className="border border-indigo-100 bg-indigo-50/40 rounded-2xl p-5 mb-6 text-center">
-                            {qrSrc && (
-                                <div className="mb-4">
-                                    <p className="text-sm font-medium text-slate-700 mb-2">{t('paymentProcess.scanQr')}</p>
-                                    <img
-                                        src={qrSrc}
-                                        alt={t('paymentProcess.scanQr')}
-                                        className="w-56 h-56 mx-auto bg-white rounded-xl border border-slate-200 object-contain p-2"
-                                    />
+                            {gateway.qrCode && (
+                                <div className="flex flex-col items-center gap-2 mb-5">
+                                    <div className="bg-white p-3 rounded-2xl border border-slate-200">
+                                        <QRCodeSVG value={gateway.qrCode} size={260} level="M" marginSize={2} />
+                                    </div>
+                                    <p className="text-xs text-slate-500">{t('paymentProcess.scanQr')}</p>
                                 </div>
                             )}
                             {gateway.payUrl && (
