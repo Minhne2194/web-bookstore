@@ -366,10 +366,10 @@ export function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
+              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/95 dark:bg-dark-bg/95 backdrop-blur-sm"
             >
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-6"></div>
-              <p className="text-xl font-bold font-serif text-slate-800 animate-pulse">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-dark-accent mb-6"></div>
+              <p className="text-xl font-bold font-serif text-slate-800 dark:text-dark-text animate-pulse">
                 {targetLang === 'en' ? 'Changing the language for you...' : 'Đang chuyển ngôn ngữ cho bạn...'}
               </p>
             </motion.div>
