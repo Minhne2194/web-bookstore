@@ -81,82 +81,82 @@ export function Register() {
     }
 
     return (
-        <div className="bg-slate-50 min-h-[calc(100vh-80px)] flex items-center justify-center p-4 relative">
+        <div className="bg-slate-50 dark:bg-dark-bg min-h-[calc(100vh-80px)] flex items-center justify-center p-4 relative transition-colors">
             
 
             {isLoading && (
-                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-50/80 backdrop-blur-sm transition-all">
+                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-50/80 dark:bg-dark-bg/85 backdrop-blur-sm transition-all">
                     <div className="relative flex justify-center items-center">
                         <div className="absolute animate-ping w-16 h-16 rounded-full bg-indigo-400 opacity-20"></div>
                         <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin z-10"></div>
                     </div>
-                    <h2 className="mt-6 text-xl font-bold text-slate-800 animate-pulse">{loadingText}</h2>
-                    <p className="text-slate-500 mt-2 text-sm">{t('register.doNotClose')}</p>
+                    <h2 className="mt-6 text-xl font-bold text-slate-800 dark:text-dark-text animate-pulse">{loadingText}</h2>
+                    <p className="text-slate-500 dark:text-dark-text-muted mt-2 text-sm">{t('register.doNotClose')}</p>
                 </div>
             )}
 
             <div className="w-full max-w-md relative z-10">
-                <h1 className="text-2xl md:text-3xl font-serif text-slate-800 mb-4 text-left">
+                <h1 className="text-2xl md:text-3xl font-serif text-slate-800 dark:text-dark-text mb-4 text-left">
                     {t('register.title')}
                 </h1>
 
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div className="bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-sm">
                     <form onSubmit={handleSubmit} className="space-y-4">
 
                         {error && (
-                            <div className="p-3 bg-rose-50 text-rose-600 border border-rose-100 rounded text-sm font-medium">
+                            <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 border border-rose-100 dark:border-rose-900 rounded text-sm font-medium">
                                 {error}
                             </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <label className="block text-sm text-slate-700">{t('register.lastName')}</label>
+                                <label className="block text-sm text-slate-700 dark:text-dark-text">{t('register.lastName')}</label>
                                 <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" required disabled={isLoading} />
+                                    className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent" required disabled={isLoading} />
                             </div>
                             <div className="space-y-1">
-                                <label className="block text-sm text-slate-700">{t('register.firstName')}</label>
+                                <label className="block text-sm text-slate-700 dark:text-dark-text">{t('register.firstName')}</label>
                                 <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" required disabled={isLoading} />
+                                    className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent" required disabled={isLoading} />
                             </div>
                         </div>
 
                         <div className="space-y-1">
-                            <label className="block text-sm text-slate-700">{t('register.email')}</label>
+                            <label className="block text-sm text-slate-700 dark:text-dark-text">{t('register.email')}</label>
                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" required disabled={isLoading} />
+                                className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent" required disabled={isLoading} />
                         </div>
 
                         <div className="space-y-1">
-                            <label className="block text-sm text-slate-700">{t('register.password')}</label>
+                            <label className="block text-sm text-slate-700 dark:text-dark-text">{t('register.password')}</label>
                             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" required disabled={isLoading} minLength={6} />
+                                className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent" required disabled={isLoading} minLength={6} />
                         </div>
 
                         <div className="space-y-1">
-                            <label className="block text-sm text-slate-700">{t('register.confirmPassword')}</label>
+                            <label className="block text-sm text-slate-700 dark:text-dark-text">{t('register.confirmPassword')}</label>
                             <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" required disabled={isLoading} minLength={6} />
+                                className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent" required disabled={isLoading} minLength={6} />
                         </div>
 
                         <div className="flex items-start gap-2 pt-1">
                             <input type="checkbox" id="subscribe" checked={subscribe} onChange={(e) => setSubscribe(e.target.checked)}
-                                className="w-4 h-4 mt-0.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-600 cursor-pointer" disabled={isLoading} />
-                            <label htmlFor="subscribe" className="text-sm text-slate-700 cursor-pointer select-none">
+                                className="w-4 h-4 mt-0.5 text-indigo-600 border-slate-300 dark:border-dark-border rounded focus:ring-indigo-600 cursor-pointer" disabled={isLoading} />
+                            <label htmlFor="subscribe" className="text-sm text-slate-700 dark:text-dark-text cursor-pointer select-none">
                                 {t('register.subscribe')}
                             </label>
                         </div>
 
                         <div className="pt-2">
                             <button type="submit" disabled={isLoading}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-8 rounded-full transition-colors disabled:opacity-50 flex justify-center uppercase">
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-dark-accent dark:hover:bg-dark-accent-hover text-white font-bold py-2.5 px-8 rounded-full transition-colors disabled:opacity-50 flex justify-center uppercase">
                                 {t('register.submitBtn')}
                             </button>
                         </div>
 
-                        <div className="text-sm text-slate-600 text-center pt-2">
-                            {t('register.alreadyHaveAccount')}<Link to="/login" className="text-indigo-600 font-medium hover:underline">{t('register.loginNow')}</Link>
+                        <div className="text-sm text-slate-600 dark:text-dark-text-muted text-center pt-2">
+                            {t('register.alreadyHaveAccount')}<Link to="/login" className="text-indigo-600 dark:text-dark-accent font-medium hover:underline">{t('register.loginNow')}</Link>
                         </div>
                     </form>
                 </div>

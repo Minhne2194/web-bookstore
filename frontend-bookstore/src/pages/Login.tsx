@@ -47,40 +47,40 @@ export function Login() {
     };
 
     return (
-        <div className="bg-slate-50 min-h-[calc(100vh-80px)] flex items-center justify-center p-4">
+        <div className="bg-slate-50 dark:bg-dark-bg min-h-[calc(100vh-80px)] flex items-center justify-center p-4 transition-colors">
             <div className="w-full max-w-md">
-                <h1 className="text-2xl md:text-3xl font-serif text-slate-800 mb-4 text-left">
+                <h1 className="text-2xl md:text-3xl font-serif text-slate-800 dark:text-dark-text mb-4 text-left">
                     {t('login.title')}
                 </h1>
 
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div className="bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-sm">
                     <form onSubmit={handleSubmit} className="space-y-4">
 
                         {error && (
-                            <div className="p-3 bg-rose-50 text-rose-600 border border-rose-100 rounded text-sm font-medium">
+                            <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 border border-rose-100 dark:border-rose-900 rounded text-sm font-medium">
                                 {error}
                             </div>
                         )}
 
                         <div className="space-y-1">
-                            <label className="block text-sm text-slate-700">{t('login.emailLabel')}</label>
+                            <label className="block text-sm text-slate-700 dark:text-dark-text">{t('login.emailLabel')}</label>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded placeholder:text-slate-400 dark:placeholder:text-dark-text-muted focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent transition-colors"
                                 required
                                 disabled={isLoading}
                             />
                         </div>
 
                         <div className="space-y-1">
-                            <label className="block text-sm text-slate-700">{t('login.passwordLabel')}</label>
+                            <label className="block text-sm text-slate-700 dark:text-dark-text">{t('login.passwordLabel')}</label>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                className="w-full px-3 py-2 bg-white dark:bg-dark-bg text-slate-900 dark:text-dark-text border border-slate-300 dark:border-dark-border rounded placeholder:text-slate-400 dark:placeholder:text-dark-text-muted focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-dark-accent transition-colors"
                                 required
                                 disabled={isLoading}
                             />
@@ -92,26 +92,26 @@ export function Login() {
                                 id="remember"
                                 checked={rememberMe}
                                 onChange={(e) => setRememberMe(e.target.checked)}
-                                className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-600 cursor-pointer accent-indigo-600"
+                                className="w-4 h-4 text-indigo-600 border-slate-300 dark:border-dark-border rounded focus:ring-indigo-600 cursor-pointer accent-indigo-600"
                                 disabled={isLoading}
                             />
-                            <label htmlFor="remember" className="text-sm text-slate-700 cursor-pointer select-none">
+                            <label htmlFor="remember" className="text-sm text-slate-700 dark:text-dark-text cursor-pointer select-none">
                                 {t('login.rememberMe')}
                             </label>
                         </div>
 
-                        <div className="text-sm text-slate-500 leading-relaxed pt-2">
+                        <div className="text-sm text-slate-500 dark:text-dark-text-muted leading-relaxed pt-2">
                             {t('login.termsPrefix')}
-                            <a href="#" className="text-indigo-600 hover:underline">{t('login.policyLink')}</a>
+                            <a href="#" className="text-indigo-600 dark:text-dark-accent hover:underline">{t('login.policyLink')}</a>
                             {t('login.termsAnd')}
-                            <a href="#" className="text-indigo-600 hover:underline">{t('login.termsLink')}</a>.
+                            <a href="#" className="text-indigo-600 dark:text-dark-accent hover:underline">{t('login.termsLink')}</a>.
                         </div>
 
                         <div className="pt-2">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-8 rounded-full transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-dark-accent dark:hover:bg-dark-accent-hover text-white font-bold py-2.5 px-8 rounded-full transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
                             >
                                 {isLoading ? (
                                     <span className="animate-pulse">{t('login.processing')}</span>
@@ -122,8 +122,8 @@ export function Login() {
                         </div>
 
                         {/* Đã cập nhật phần text dưới cùng theo yêu cầu */}
-                        <div className="text-sm text-slate-600 text-center pt-2">
-                            {t('login.or')}<Link to="/register" className="text-indigo-600 font-medium hover:underline">{t('login.createAccount')}</Link>{t('login.separator')}<a href="#" className="text-indigo-600 font-medium hover:underline">{t('login.forgotPassword')}</a>
+                        <div className="text-sm text-slate-600 dark:text-dark-text-muted text-center pt-2">
+                            {t('login.or')}<Link to="/register" className="text-indigo-600 dark:text-dark-accent font-medium hover:underline">{t('login.createAccount')}</Link>{t('login.separator')}<a href="#" className="text-indigo-600 dark:text-dark-accent font-medium hover:underline">{t('login.forgotPassword')}</a>
                         </div>
                     </form>
                 </div>
