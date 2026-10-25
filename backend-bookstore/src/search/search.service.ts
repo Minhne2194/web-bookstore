@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Client } from '@elastic/elasticsearch';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 type SearchFilters = {
@@ -53,7 +54,14 @@ export class SearchService implements OnModuleInit {
   });
   private indexReady = false;
   private esUnavailableUntil = 0;
+  private unaccentReady = false;
   private static readonly ES_RETRY_AFTER_MS = 5 * 60 * 1000;
+
+  /** Biểu thức "toàn văn" của một sách, đã bỏ dấu và viết thường — dùng cho tìm không dấu. */
+  private static readonly HAYSTACK_SQL =
+    "unaccent(lower(coalesce(b.title, '') || ' ' || coalesce(b.description, '') || ' ' || coalesce(b.isbn, '') || ' ' || " +
+    "coalesce((SELECT string_agg(a.name, ' ') FROM book_authors ba JOIN authors a ON a.author_id = ba.author_id " +
+    "WHERE ba.book_id = b.book_id), '')))";
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -64,6 +72,81 @@ export class SearchService implements OnModuleInit {
       this.logger.warn(
         `Elasticsearch is unavailable on startup. PostgreSQL fallback will be used. ${this.errorMessage(error)}`,
       );
+    }
+    await this.ensureUnaccent();
+  }
+
+  /**
+   * Bật extension unaccent để tìm được không dấu trên nhánh PostgreSQL.
+   * Nếu DB không cho tạo extension thì giữ nguyên hành vi cũ (phân biệt dấu).
+   */
+  private async ensureUnaccent() {
+    try {
+      await this.prisma.$executeRawUnsafe('CREATE EXTENSION IF NOT EXISTS unaccent');
+      await this.prisma.$queryRawUnsafe("SELECT unaccent('tiếng Việt')");
+      this.unaccentReady = true;
+      this.logger.log('PostgreSQL unaccent đã bật — tìm kiếm không phân biệt dấu.');
+    } catch (error) {
+      this.unaccentReady = false;
+      this.logger.warn(
+        `Không bật được unaccent, tìm kiếm sẽ phân biệt dấu. ${this.errorMessage(error)}`,
+      );
+    }
+  }
+
+  /** Bỏ dấu tiếng Việt ở phía Node để so với cột đã unaccent trong DB. */
+  private deaccent(text: string) {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
+      .toLowerCase();
+  }
+
+  /**
+   * Trả về danh sách book_id khớp từ khoá, không phân biệt dấu.
+   * Ưu tiên khớp nguyên cụm ("trinh tham" ≈ "Trinh Thám"), nếu không có kết quả
+   * mới nới thành yêu cầu đủ từng từ — tránh việc "trinh tham" khớp lung tung
+   * qua "tham khảo", "tham gia" trong mô tả.
+   * null = chưa bật được unaccent, caller phải tự xử lý theo cách cũ.
+   */
+  private async matchIdsByText(queryText?: string): Promise<string[] | null> {
+    if (!this.unaccentReady) return null;
+
+    const terms = this.queryTerms(queryText);
+    if (!terms.length) return [];
+
+    const search = (conditions: Prisma.Sql) =>
+      this.prisma.$queryRaw<Array<{ book_id: string }>>(
+        Prisma.sql`
+          SELECT b.book_id
+          FROM books b
+          WHERE b.is_active = true AND ${conditions}
+        `,
+      );
+
+    try {
+      const phraseRows = await search(
+        Prisma.sql`${Prisma.raw(SearchService.HAYSTACK_SQL)} LIKE ${`%${this.deaccent(queryText!.trim())}%`}`,
+      );
+      if (phraseRows.length || terms.length === 1) {
+        return phraseRows.map((row) => row.book_id);
+      }
+
+      const perTerm = terms.map(
+        (term) =>
+          Prisma.sql`${Prisma.raw(SearchService.HAYSTACK_SQL)} LIKE ${`%${this.deaccent(term)}%`}`,
+      );
+      const rows = await search(Prisma.join(perTerm, ' AND '));
+      return rows.map((row) => row.book_id);
+    } catch (error) {
+      // Sai kiểu / thiếu quyền → tắt unaccent để không làm hỏng cả trang tìm kiếm
+      this.unaccentReady = false;
+      this.logger.warn(
+        `Truy vấn unaccent lỗi, quay về tìm phân biệt dấu. ${this.errorMessage(error)}`,
+      );
+      return null;
     }
   }
 
@@ -580,7 +663,8 @@ export class SearchService implements OnModuleInit {
     page: number,
     limit: number,
   ) {
-    const where = this.buildPrismaWhere(filters);
+    const matchedIds = await this.matchIdsByText(filters.q);
+    const where = await this.buildPrismaWhere(filters, matchedIds);
     const orderBy = this.buildPrismaOrderBy(filters.sort);
     const skip = (page - 1) * limit;
 
@@ -597,7 +681,7 @@ export class SearchService implements OnModuleInit {
     ]);
 
     // Lightweight facets via raw SQL aggregations
-    const facets = await this.buildPostgresFacetsRaw(filters);
+    const facets = await this.buildPostgresFacetsRaw(filters, matchedIds);
 
     return {
       data: books.map((book) => this.formatPrismaBook(book)),
@@ -613,7 +697,10 @@ export class SearchService implements OnModuleInit {
     };
   }
 
-  private async buildPostgresFacetsRaw(filters: SearchFilters) {
+  private async buildPostgresFacetsRaw(
+    filters: SearchFilters,
+    matchedIds: string[] | null = null,
+  ) {
     const minPrice = this.optionalNumber(filters.minPrice);
     const maxPrice = this.optionalNumber(filters.maxPrice);
     const rating = this.optionalNumber(filters.rating);
@@ -640,7 +727,14 @@ export class SearchService implements OnModuleInit {
           )
       )`);
     }
-    if (queryText) {
+    if (matchedIds) {
+      // Dùng đúng tập id mà kết quả tìm kiếm trả về để facet không lệch số
+      conditions.push(
+        matchedIds.length
+          ? `b.book_id IN (${matchedIds.map((id) => `'${id.replace(/'/g, "''")}'`).join(', ')})`
+          : 'b.book_id IS NULL',
+      );
+    } else if (queryText) {
       const escaped = queryText.replace(/'/g, "''");
       conditions.push(`(b.title ILIKE '%${escaped}%' OR b.description ILIKE '%${escaped}%')`);
     }
@@ -705,23 +799,26 @@ export class SearchService implements OnModuleInit {
 
   private async postgresSuggest(queryText: string) {
     const terms = this.queryTerms(queryText);
+    const matchedIds = await this.matchIdsByText(queryText);
     const books = await this.prisma.book.findMany({
-      where: {
-        is_active: true,
-        AND: terms.map((term) => ({
-          OR: [
-            { title: { contains: term, mode: 'insensitive' } },
-            { isbn: { contains: term, mode: 'insensitive' } },
-            {
-              book_authors: {
-                some: {
-                  author: { name: { contains: term, mode: 'insensitive' } },
+      where: matchedIds
+        ? { is_active: true, book_id: { in: matchedIds } }
+        : {
+            is_active: true,
+            AND: terms.map((term) => ({
+              OR: [
+                { title: { contains: term, mode: 'insensitive' } },
+                { isbn: { contains: term, mode: 'insensitive' } },
+                {
+                  book_authors: {
+                    some: {
+                      author: { name: { contains: term, mode: 'insensitive' } },
+                    },
+                  },
                 },
-              },
-            },
-          ],
-        })),
-      },
+              ],
+            })),
+          },
       take: 8,
       include: this.bookInclude(),
       orderBy: { sold_count: 'desc' },
@@ -731,7 +828,10 @@ export class SearchService implements OnModuleInit {
     return { data, meta: { total: data.length, source: 'postgres' } };
   }
 
-  private buildPrismaWhere(filters: SearchFilters) {
+  private async buildPrismaWhere(
+    filters: SearchFilters,
+    matchedIds: string[] | null = null,
+  ) {
     const where: any = { is_active: true };
     const and: any[] = [];
     const ids = this.splitCsv(filters.ids);
@@ -773,27 +873,32 @@ export class SearchService implements OnModuleInit {
 
     const terms = this.queryTerms(filters.q);
     if (terms.length) {
-      and.push(
-        ...terms.map((term) => ({
-          OR: [
-            { title: { contains: term, mode: 'insensitive' } },
-            { description: { contains: term, mode: 'insensitive' } },
-            { isbn: { contains: term, mode: 'insensitive' } },
-            {
-              book_authors: {
-                some: {
-                  author: { name: { contains: term, mode: 'insensitive' } },
+      if (matchedIds) {
+        // unaccent bật: lọc theo danh sách id đã khớp (không phân biệt dấu)
+        and.push({ book_id: { in: matchedIds } });
+      } else {
+        and.push(
+          ...terms.map((term) => ({
+            OR: [
+              { title: { contains: term, mode: 'insensitive' } },
+              { description: { contains: term, mode: 'insensitive' } },
+              { isbn: { contains: term, mode: 'insensitive' } },
+              {
+                book_authors: {
+                  some: {
+                    author: { name: { contains: term, mode: 'insensitive' } },
+                  },
                 },
               },
-            },
-            {
-              publisher: {
-                is: { name: { contains: term, mode: 'insensitive' } },
+              {
+                publisher: {
+                  is: { name: { contains: term, mode: 'insensitive' } },
+                },
               },
-            },
-          ],
-        })),
-      );
+            ],
+          })),
+        );
+      }
     }
 
     if (and.length) where.AND = and;

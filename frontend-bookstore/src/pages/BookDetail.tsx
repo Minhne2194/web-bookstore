@@ -395,14 +395,14 @@ export function BookDetail() {
     const totalReviewPages = Math.ceil(reviewTotal / 5);
 
     return (
-        <div className="bg-slate-50 min-h-screen py-10">
+        <div className="bg-slate-50 min-h-screen py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <Link to="/search" className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 mb-8 transition-colors font-medium">
+                <Link to="/search" className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 mb-4 transition-colors font-medium">
                     <ArrowLeft className="w-5 h-5" /> {t('bookDetail.backToSearch')}
                 </Link>
 
-                <div className="grid md:grid-cols-12 gap-8 mb-12">
+                <div className="grid md:grid-cols-12 gap-8 mb-8">
 
 
                     <motion.div
@@ -419,34 +419,34 @@ export function BookDetail() {
 
                     <motion.div
                         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-                        className="md:col-span-7 lg:col-span-8 bg-white rounded-3xl p-6 md:p-12 shadow-sm border border-slate-100 flex flex-col"
+                        className="md:col-span-7 lg:col-span-8 bg-white rounded-3xl p-6 md:px-12 md:py-8 shadow-sm border border-slate-100 flex flex-col"
                     >
                         <div className="text-sm font-semibold text-indigo-600 mb-2 uppercase tracking-wider flex flex-wrap gap-2">
                             {book.categories && book.categories.length > 0
                                 ? Array.from(new Set(book.categories.flatMap(cat => cat.parent ? [cat.parent.name, cat.name] : [cat.name]))).join(' • ')
                                 : (book.category || t('bookDetail.category'))}
                         </div>
-                        <h1 className="text-3xl md:text-5xl font-serif font-bold text-slate-900 mb-4 leading-tight">
+                        <h1 className="text-3xl md:text-5xl font-serif font-bold text-slate-900 mb-2 leading-tight">
                             {book.title}
                         </h1>
-                        <p className="text-lg text-slate-600 mb-6 font-medium">
+                        <p className="text-lg text-slate-600 mb-2 font-medium">
                             {t('bookDetail.author')} <span className="text-indigo-600">{book.author || t('bookDetail.updating')}</span>
                         </p>
 
-                        <div className="flex items-center gap-2 mb-8 pb-8 border-b border-slate-100">
+                        <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
                             <StarRating value={Math.round(Number(book.avg_rating) || 0)} />
                             <span className="text-slate-700 font-bold">{Number(book.avg_rating || 0).toFixed(1)}</span>
                             <span className="text-slate-400">({book.rating_count || 0} {t('bookDetail.reviewsCount')})</span>
                         </div>
 
-                        <div className="flex items-end gap-4 mb-8">
+                        <div className="flex items-end gap-4 mb-3">
                             <span className="text-4xl font-bold text-slate-900">{formatPrice(book.price)}</span>
                             {book.compare_price && (
                                 <span className="text-xl text-slate-400 line-through mb-1">{formatPrice(book.compare_price)}</span>
                             )}
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
+                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
                             <div className="flex items-center border border-slate-200 rounded-full bg-slate-50 w-full sm:w-32 h-12">
                                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-full flex items-center justify-center text-slate-600 hover:text-indigo-600 font-bold text-xl">-</button>
                                 <span className="flex-1 text-center font-bold text-slate-900">{quantity}</span>
@@ -460,10 +460,10 @@ export function BookDetail() {
                             </button>
                         </div>
 
-                        <div className="mb-8 border-b border-slate-100 pb-4">
+                        <div className="mb-4 border-b border-slate-100 pb-2">
                             <button 
                                 onClick={() => setIsDescExpanded(!isDescExpanded)}
-                                className="w-full flex items-center justify-between text-2xl font-serif font-bold text-slate-900 mb-4"
+                                className="w-full flex items-center justify-between text-2xl font-serif font-bold text-slate-900 mb-2"
                             >
                                 {t('bookDetail.description')}
                                 {isDescExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}

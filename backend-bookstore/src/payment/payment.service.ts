@@ -405,6 +405,19 @@ export class PaymentService implements OnModuleInit {
   async createPayOSPayment(orderId: string, amount: number, orderInfo: string) {
     const { returnUrl, cancelUrl } = this.payosConfig;
 
+    if (!this.payOS) {
+      throw new BadRequestException('Server chưa cấu hình PayOS');
+    }
+
+    // PayOS chỉ nhận số nguyên; total_amount từ Prisma là Decimal nên client
+    // có thể gửi lên dạng chuỗi "169000.00" → phải ép về số nguyên.
+    const payableAmount = Math.round(Number(amount));
+    if (!Number.isFinite(payableAmount) || payableAmount < 1000) {
+      throw new BadRequestException(
+        `Số tiền không hợp lệ để thanh toán PayOS: ${amount}`,
+      );
+    }
+
     // PayOS requires an integer orderCode (max 15 digits)
     const payosOrderCode =
       Math.floor(Date.now() / 1000) * 1000 + Math.floor(Math.random() * 1000);
@@ -421,7 +434,7 @@ export class PaymentService implements OnModuleInit {
     try {
       const result = await this.payOS.paymentRequests.create({
         orderCode: payosOrderCode,
-        amount,
+        amount: payableAmount,
         description: orderInfo.slice(0, 25),
         returnUrl: `${returnUrl}?orderId=${orderId}`,
         cancelUrl: `${cancelUrl}?orderId=${orderId}`,
@@ -436,9 +449,22 @@ export class PaymentService implements OnModuleInit {
         message: 'Tạo thanh toán PayOS thành công',
       };
     } catch (error: any) {
-      console.error('PayOS Error:', error?.message || error);
+      const data = error?.response?.data;
+      const detail =
+        (typeof data === 'string'
+          ? data
+          : data?.desc || data?.message || data?.error) ||
+        error?.message ||
+        'không rõ nguyên nhân';
+      console.error(
+        'PayOS Error:',
+        detail,
+        JSON.stringify(data ?? {}),
+        '| amount:',
+        payableAmount,
+      );
       throw new BadRequestException(
-        'Không thể kết nối đến cổng thanh toán PayOS',
+        `Không tạo được thanh toán PayOS: ${String(detail).slice(0, 140)}`,
       );
     }
   }
