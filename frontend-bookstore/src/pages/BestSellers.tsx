@@ -50,14 +50,14 @@ export function BestSellers() {
     };
 
     return (
-        <div className="bg-slate-50 min-h-screen py-12">
+        <div className="bg-slate-50 dark:bg-dark-bg min-h-screen py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-10 text-center flex flex-col items-center">
-                    <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 rounded-full flex items-center justify-center mb-4">
                         <TrendingUp size={32} />
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mb-4">{t('bestSellers.title')}</h1>
-                    <p className="text-slate-500 max-w-2xl mx-auto">{t('bestSellers.subtitle')}</p>
+                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-dark-text mb-4">{t('bestSellers.title')}</h1>
+                    <p className="text-slate-500 dark:text-dark-text-muted max-w-2xl mx-auto">{t('bestSellers.subtitle')}</p>
                 </div>
 
                 {loading ? (
@@ -67,7 +67,7 @@ export function BestSellers() {
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
                         {books.map((book, idx) => (
-                            <div key={book.book_id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 group flex flex-col h-full hover:shadow-md transition-shadow relative">
+                            <div key={book.book_id} className="bg-white dark:bg-dark-surface rounded-xl shadow-sm border border-slate-100 dark:border-dark-border p-4 group flex flex-col h-full hover:shadow-md transition-shadow relative">
                                 {/* Rank badge */}
                                 {idx < 3 && (
                                     <div className={`absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md ${idx === 0 ? 'bg-yellow-400' : idx === 1 ? 'bg-slate-300' : 'bg-amber-600'}`}>
@@ -85,18 +85,18 @@ export function BestSellers() {
 
                                 <div className="flex flex-col grow">
                                     <Link to={`/book/${book.book_id}`}>
-                                        <h3 className="font-semibold text-slate-900 line-clamp-2 hover:text-indigo-600 transition-colors text-sm">
+                                        <h3 className="font-semibold text-slate-900 dark:text-dark-text line-clamp-2 hover:text-indigo-600 dark:hover:text-dark-accent transition-colors text-sm">
                                             {book.title}
                                         </h3>
                                     </Link>
-                                    <p className="text-rose-600 font-bold mt-auto pt-3">
+                                    <p className="text-rose-600 dark:text-rose-300 font-bold mt-auto pt-3">
                                         {formatPrice(book.price)}
                                     </p>
                                 </div>
 
                                 <button
                                     onClick={() => handleAddToCart(book.book_id)}
-                                    className="w-full mt-3 bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-rose-600 transition-colors flex items-center justify-center gap-2"
+                                    className="w-full mt-3 bg-slate-900 dark:bg-dark-surface-hover text-white py-2 rounded-lg text-sm font-medium hover:bg-rose-600 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <ShoppingCart className="w-4 h-4" /> {t('bestSellers.buyNow')}
                                 </button>

@@ -793,19 +793,19 @@ export function Admin() {
 
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-slate-50 flex justify-center items-center p-4">
-                <div className="w-full max-w-md bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
-                    <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex justify-center items-center p-4">
+                <div className="w-full max-w-md bg-white dark:bg-dark-surface rounded-3xl shadow-sm border border-slate-100 dark:border-dark-border p-8">
+                    <div className="w-16 h-16 bg-indigo-50 dark:bg-dark-surface-hover text-indigo-600 dark:text-dark-accent rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <Lock size={32} />
                     </div>
-                    <h1 className="text-2xl font-serif font-bold text-slate-900 text-center mb-6">Đăng nhập Admin</h1>
+                    <h1 className="text-2xl font-serif font-bold text-slate-900 dark:text-dark-text text-center mb-6">Đăng nhập Admin</h1>
                     <form onSubmit={handleLogin} className="space-y-4">
-                        {error ? <div className="p-3 bg-rose-50 text-rose-600 rounded-xl text-sm">{error}</div> : null}
+                        {error ? <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 rounded-xl text-sm">{error}</div> : null}
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-xl"
                             placeholder="Email"
                             required
                             disabled={isLoggingIn}
@@ -814,7 +814,7 @@ export function Admin() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-xl"
                             placeholder="Mật khẩu"
                             required
                             disabled={isLoggingIn}
@@ -822,7 +822,7 @@ export function Admin() {
                         <button
                             type="submit"
                             disabled={isLoggingIn}
-                            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
+                            className="w-full py-3 px-4 bg-indigo-600 dark:bg-dark-accent hover:bg-indigo-700 dark:hover:bg-dark-accent-hover text-white font-bold rounded-xl"
                         >
                             {isLoggingIn ? 'Đang đăng nhập...' : 'Đăng nhập'}
                         </button>
@@ -840,11 +840,11 @@ export function Admin() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row" style={{ '--sidebar-w': isSidebarCollapsed ? '0px' : '256px' } as React.CSSProperties}>
+        <div className="min-h-screen bg-slate-100 dark:bg-dark-bg flex flex-col md:flex-row" style={{ '--sidebar-w': isSidebarCollapsed ? '0px' : '256px' } as React.CSSProperties}>
             {/* Mobile Header */}
-            <div className="md:hidden bg-white p-4 flex items-center justify-between border-b shadow-sm shrink-0">
-                <span className="font-bold text-xl text-slate-800">Admin Panel</span>
-                <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg">
+            <div className="md:hidden bg-white dark:bg-dark-surface p-4 flex items-center justify-between border-b dark:border-dark-border shadow-sm shrink-0">
+                <span className="font-bold text-xl text-slate-800 dark:text-dark-text">Admin Panel</span>
+                <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 dark:text-dark-text-muted hover:bg-slate-50 dark:hover:bg-dark-surface-hover rounded-lg">
                     <Menu size={24} />
                 </button>
             </div>
@@ -860,25 +860,25 @@ export function Admin() {
             {/* Sidebar */}
             <div className={`
                 fixed md:static inset-y-0 left-0 z-50
-                bg-white border-r border-slate-100 shadow-xl md:shadow-sm flex flex-col shrink-0
+                bg-white dark:bg-dark-surface border-r border-slate-100 dark:border-dark-border shadow-xl md:shadow-sm flex flex-col shrink-0
                 transition-all duration-300 ease-in-out
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                 ${isSidebarCollapsed ? 'md:w-16' : 'w-64'}
             `}>
                 {/* Header */}
-                <div className={`border-b border-slate-100 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:justify-center md:px-0 md:py-5 p-6 justify-between' : 'p-5 justify-between'
+                <div className={`border-b border-slate-100 dark:border-dark-border flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:justify-center md:px-0 md:py-5 p-6 justify-between' : 'p-5 justify-between'
                     }`}>
                     {/* Logo / Title */}
                     <div className={`flex items-center gap-2 transition-all duration-300 ${isSidebarCollapsed ? 'md:hidden' : ''
                         }`}>
-                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 bg-indigo-600 dark:bg-dark-accent rounded-lg flex items-center justify-center shrink-0">
                             <span className="text-white font-bold text-sm leading-none">A</span>
                         </div>
-                        <span className="font-bold text-lg text-slate-800 whitespace-nowrap">Admin Panel</span>
+                        <span className="font-bold text-lg text-slate-800 dark:text-dark-text whitespace-nowrap">Admin Panel</span>
                     </div>
                     {/* Collapsed logo */}
                     {isSidebarCollapsed && (
-                        <div className="hidden md:flex w-8 h-8 bg-indigo-600 rounded-lg items-center justify-center shrink-0 ml-4">
+                        <div className="hidden md:flex w-8 h-8 bg-indigo-600 dark:bg-dark-accent rounded-lg items-center justify-center shrink-0 ml-4">
                             <span className="text-white font-bold text-sm leading-none">A</span>
                         </div>
                     )}
@@ -888,7 +888,7 @@ export function Admin() {
                         <button
                             onClick={() => setIsSidebarCollapsed(c => !c)}
                             title={isSidebarCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
-                            className="hidden md:flex p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                            className="hidden md:flex p-1.5 text-slate-400 dark:text-dark-text-muted hover:text-slate-600 dark:hover:text-dark-text hover:bg-slate-100 dark:hover:bg-dark-surface-hover rounded-lg transition-colors"
                         >
                             {isSidebarCollapsed
                                 ? <ChevronsRight size={18} />
@@ -896,7 +896,7 @@ export function Admin() {
                             }
                         </button>
                         {/* Mobile close */}
-                        <button onClick={() => setIsSidebarOpen(false)} className="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-lg">
+                        <button onClick={() => setIsSidebarOpen(false)} className="md:hidden p-2 text-slate-400 dark:text-dark-text-muted hover:bg-slate-100 dark:hover:bg-dark-surface-hover rounded-lg">
                             <X size={18} />
                         </button>
                     </div>
@@ -927,8 +927,8 @@ export function Admin() {
                                     w-full flex items-center rounded-xl font-medium transition-all duration-200
                                     ${isSidebarCollapsed ? 'md:justify-center md:px-0 md:py-3 px-3 py-3 gap-3' : 'gap-3 px-3 py-3'}
                                     ${activeTab === key
-                                        ? 'bg-indigo-50 text-indigo-600'
-                                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                                        ? 'bg-indigo-50 dark:bg-dark-surface-hover text-indigo-600 dark:text-dark-accent'
+                                        : 'text-slate-500 dark:text-dark-text-muted hover:bg-slate-50 dark:hover:bg-dark-surface-hover hover:text-slate-700 dark:hover:text-dark-text'
                                     }
                                 `}
                             >
@@ -947,13 +947,13 @@ export function Admin() {
                 </nav>
 
                 {/* Footer */}
-                <div className={`border-t border-slate-100 py-3 shrink-0 transition-all duration-300 ${isSidebarCollapsed ? 'md:px-2 px-3' : 'px-3'
+                <div className={`border-t border-slate-100 dark:border-dark-border py-3 shrink-0 transition-all duration-300 ${isSidebarCollapsed ? 'md:px-2 px-3' : 'px-3'
                     }`}>
                     <button
                         onClick={handleLogout}
                         title={isSidebarCollapsed ? 'Đăng xuất' : undefined}
                         className={`
-                            w-full flex items-center rounded-xl font-medium text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-all duration-200 py-3
+                            w-full flex items-center rounded-xl font-medium text-rose-500 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-300 transition-all duration-200 py-3
                             ${isSidebarCollapsed ? 'md:justify-center md:px-0 px-3 gap-3' : 'gap-3 px-3'}
                         `}
                     >
@@ -972,48 +972,48 @@ export function Admin() {
                 ) : activeTab === 'dashboard' ? (
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="bg-white p-6 rounded-2xl border flex items-center gap-4">
+                            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border dark:border-dark-border flex items-center gap-4">
                                 <DollarSign className="text-emerald-600" />
                                 <div>
-                                    <p className="text-slate-500 text-sm">Tổng doanh thu</p>
-                                    <p className="text-2xl font-bold text-slate-800">{formatPrice(totalRevenue)}</p>
+                                    <p className="text-slate-500 dark:text-dark-text-muted text-sm">Tổng doanh thu</p>
+                                    <p className="text-2xl font-bold text-slate-800 dark:text-dark-text">{formatPrice(totalRevenue)}</p>
                                 </div>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border flex items-center gap-4">
+                            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border dark:border-dark-border flex items-center gap-4">
                                 <ShoppingBag className="text-blue-600" />
                                 <div>
-                                    <p className="text-slate-500 text-sm">Tổng đơn hàng</p>
-                                    <p className="text-2xl font-bold text-slate-800">{stats?.totalOrders ?? 0}</p>
+                                    <p className="text-slate-500 dark:text-dark-text-muted text-sm">Tổng đơn hàng</p>
+                                    <p className="text-2xl font-bold text-slate-800 dark:text-dark-text">{stats?.totalOrders ?? 0}</p>
                                     {stats?.pendingOrders ? <p className="text-xs text-amber-600">{stats.pendingOrders} chờ xử lý</p> : null}
                                 </div>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border flex items-center gap-4">
+                            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border dark:border-dark-border flex items-center gap-4">
                                 <Package className="text-amber-600" />
                                 <div>
-                                    <p className="text-slate-500 text-sm">Tổng sản phẩm</p>
-                                    <p className="text-2xl font-bold text-slate-800">{stats?.totalBooks ?? 0}</p>
+                                    <p className="text-slate-500 dark:text-dark-text-muted text-sm">Tổng sản phẩm</p>
+                                    <p className="text-2xl font-bold text-slate-800 dark:text-dark-text">{stats?.totalBooks ?? 0}</p>
                                 </div>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border flex items-center gap-4">
+                            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border dark:border-dark-border flex items-center gap-4">
                                 <Users className="text-violet-600" />
                                 <div>
-                                    <p className="text-slate-500 text-sm">Người dùng</p>
-                                    <p className="text-2xl font-bold text-slate-800">{stats?.totalUsers ?? 0}</p>
+                                    <p className="text-slate-500 dark:text-dark-text-muted text-sm">Người dùng</p>
+                                    <p className="text-2xl font-bold text-slate-800 dark:text-dark-text">{stats?.totalUsers ?? 0}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-2xl border p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-800">Search index</h2>
-                                <p className="text-sm text-slate-500">Đồng bộ lại Elasticsearch sau khi import hoặc chỉnh sửa nhiều sách.</p>
-                                {reindexStatus ? <p className="text-sm text-indigo-600 mt-2">{reindexStatus}</p> : null}
+                                <h2 className="text-lg font-bold text-slate-800 dark:text-dark-text">Search index</h2>
+                                <p className="text-sm text-slate-500 dark:text-dark-text-muted">Đồng bộ lại Elasticsearch sau khi import hoặc chỉnh sửa nhiều sách.</p>
+                                {reindexStatus ? <p className="text-sm text-indigo-600 dark:text-dark-accent mt-2">{reindexStatus}</p> : null}
                             </div>
                             <button
                                 type="button"
                                 onClick={handleRebuildSearchIndex}
                                 disabled={reindexing}
-                                className="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold hover:bg-indigo-600 disabled:opacity-60 flex items-center justify-center gap-2"
+                                className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-dark-accent text-white font-semibold hover:bg-indigo-600 dark:hover:bg-dark-accent-hover disabled:opacity-60 flex items-center justify-center gap-2"
                             >
                                 <RefreshCw size={18} className={reindexing ? 'animate-spin' : ''} />
                                 {reindexing ? 'Đang rebuild...' : 'Rebuild Search Index'}
@@ -1043,9 +1043,9 @@ export function Admin() {
                             const tooltipW = 140;
                             const tooltipH = 48;
                             return (
-                                <div className="bg-white rounded-2xl border p-6">
-                                    <h2 className="text-lg font-bold text-slate-800 mb-1">Doanh thu theo tháng</h2>
-                                    <p className="text-sm text-slate-500 mb-4">12 tháng gần nhất (đơn đã thanh toán)</p>
+                                <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border p-6">
+                                    <h2 className="text-lg font-bold text-slate-800 dark:text-dark-text mb-1">Doanh thu theo tháng</h2>
+                                    <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-4">12 tháng gần nhất (đơn đã thanh toán)</p>
                                     <div className="w-full overflow-x-auto">
                                         <svg
                                             viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -1177,12 +1177,12 @@ export function Admin() {
                             );
                         })()}
 
-                        <div className="bg-white rounded-2xl border p-6">
-                            <h2 className="text-lg font-bold text-slate-800 mb-4">Đơn hàng gần đây</h2>
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border p-6">
+                            <h2 className="text-lg font-bold text-slate-800 dark:text-dark-text mb-4">Đơn hàng gần đây</h2>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left min-w-[600px]">
                                     <thead>
-                                        <tr className="border-b text-sm text-slate-500">
+                                        <tr className="border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                             <th className="pb-3">Mã ĐH</th>
                                             <th className="pb-3">Khách hàng</th>
                                             <th className="pb-3">Ngày đặt</th>
@@ -1192,7 +1192,7 @@ export function Admin() {
                                     </thead>
                                     <tbody className="text-sm">
                                         {orders.slice(0, 5).map((order) => (
-                                            <tr key={order.order_id} className="border-b border-slate-50">
+                                            <tr key={order.order_id} className="border-b border-slate-50 dark:border-dark-border">
                                                 <td className="py-3">#{order.order_code?.split('-')[1] || order.order_id.slice(0, 6)}</td>
                                                 <td className="py-3">{order.user?.full_name || 'Khách vãng lai'}</td>
                                                 <td className="py-3">{formatDate(order.created_at)}</td>
@@ -1206,10 +1206,10 @@ export function Admin() {
                         </div>
                     </div>
                 ) : activeTab === 'orders' ? (
-                    <div className="bg-white rounded-2xl border overflow-x-auto">
+                    <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-x-auto">
                         <table className="w-full min-w-[800px] text-left">
                             <thead>
-                                <tr className="bg-slate-50 border-b text-sm text-slate-500">
+                                <tr className="bg-slate-50 dark:bg-dark-bg border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                     <th className="py-3 px-6">Mã ĐH</th>
                                     <th className="py-3 px-6">Khách hàng</th>
                                     <th className="py-3 px-6">Ngày đặt</th>
@@ -1221,7 +1221,7 @@ export function Admin() {
                                 {orders.map((order) => {
                                     const statusMeta = getOrderStatusMeta(order.status);
                                     return (
-                                        <tr key={order.order_id} className="border-b border-slate-50">
+                                        <tr key={order.order_id} className="border-b border-slate-50 dark:border-dark-border">
                                             <td className="py-3 px-6">#{order.order_code?.split('-')[1] || order.order_id.slice(0, 6)}</td>
                                             <td className="py-3 px-6">{order.user?.full_name || 'Khách vãng lai'}</td>
                                             <td className="py-3 px-6">{formatDate(order.created_at)}</td>
@@ -1249,14 +1249,14 @@ export function Admin() {
                 ) : activeTab === 'books' ? (
                     <div className="space-y-4">
                         <div className="flex justify-end">
-                            <button onClick={openAddBookForm} className="bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center gap-2">
+                            <button onClick={openAddBookForm} className="bg-indigo-600 dark:bg-dark-accent text-white px-4 py-2 rounded-xl flex items-center gap-2">
                                 <Plus size={18} /> Thêm sách mới
                             </button>
                         </div>
-                        <div className="bg-white rounded-2xl border overflow-x-auto">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-x-auto">
                             <table className="w-full min-w-[700px] text-left">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b text-sm text-slate-500">
+                                    <tr className="bg-slate-50 dark:bg-dark-bg border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                         <th className="py-3 px-6">Tên sách</th>
                                         <th className="py-3 px-6">Giá</th>
                                         <th className="py-3 px-6">Tồn kho</th>
@@ -1265,15 +1265,15 @@ export function Admin() {
                                 </thead>
                                 <tbody className="text-sm">
                                     {books.map((book) => (
-                                        <tr key={book.book_id} className="border-b border-slate-50">
-                                            <td className="py-3 px-6 font-semibold text-slate-800">{book.title}</td>
+                                        <tr key={book.book_id} className="border-b border-slate-50 dark:border-dark-border">
+                                            <td className="py-3 px-6 font-semibold text-slate-800 dark:text-dark-text">{book.title}</td>
                                             <td className="py-3 px-6">{formatPrice(book.price)}</td>
                                             <td className="py-3 px-6">{book.stock_qty}</td>
                                             <td className="py-3 px-6 text-center space-x-3">
-                                                <button onClick={() => openEditBookForm(book)} className="text-indigo-600">
+                                                <button onClick={() => openEditBookForm(book)} className="text-indigo-600 dark:text-dark-accent">
                                                     <Edit size={18} />
                                                 </button>
-                                                <button onClick={() => handleDeleteBook(book.book_id)} className="text-rose-600">
+                                                <button onClick={() => handleDeleteBook(book.book_id)} className="text-rose-600 dark:text-rose-300">
                                                     <X size={18} />
                                                 </button>
                                             </td>
@@ -1286,18 +1286,18 @@ export function Admin() {
                 ) : activeTab === 'users' ? (
                     <div className="space-y-4">
                         {/* Search + Filter bar */}
-                        <div className="bg-white rounded-2xl border p-4 flex flex-wrap gap-3 items-center">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border p-4 flex flex-wrap gap-3 items-center">
                             <input
                                 type="text"
                                 value={userSearch}
                                 onChange={(e) => setUserSearch(e.target.value)}
                                 placeholder="Tìm theo tên hoặc email..."
-                                className="flex-1 min-w-[220px] px-4 py-2 border border-slate-200 rounded-xl text-sm"
+                                className="flex-1 min-w-[220px] px-4 py-2 border border-slate-200 dark:border-dark-border dark:bg-dark-bg rounded-xl text-sm"
                             />
                             <select
                                 value={userStatusFilter}
                                 onChange={(e) => setUserStatusFilter(e.target.value)}
-                                className="px-4 py-2 border border-slate-200 rounded-xl text-sm"
+                                className="px-4 py-2 border border-slate-200 dark:border-dark-border dark:bg-dark-bg rounded-xl text-sm"
                             >
                                 <option value="">Tất cả trạng thái</option>
                                 <option value="active">Active</option>
@@ -1307,20 +1307,20 @@ export function Admin() {
                             <select
                                 value={userRoleFilter}
                                 onChange={(e) => setUserRoleFilter(e.target.value)}
-                                className="px-4 py-2 border border-slate-200 rounded-xl text-sm"
+                                className="px-4 py-2 border border-slate-200 dark:border-dark-border dark:bg-dark-bg rounded-xl text-sm"
                             >
                                 <option value="">Tất cả vai trò</option>
                                 <option value="customer">Customer</option>
                                 <option value="admin">Admin</option>
                                 <option value="moderator">Moderator</option>
                             </select>
-                            <span className="text-sm text-slate-500">{filteredUsers.length} kết quả</span>
+                            <span className="text-sm text-slate-500 dark:text-dark-text-muted">{filteredUsers.length} kết quả</span>
                         </div>
 
-                        <div className="bg-white rounded-2xl border overflow-x-auto">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-x-auto">
                             <table className="w-full min-w-[1050px] text-left">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b text-sm text-slate-500">
+                                    <tr className="bg-slate-50 dark:bg-dark-bg border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                         <th className="py-3 px-6">Khách hàng</th>
                                         <th className="py-3 px-6">Email</th>
                                         <th className="py-3 px-6">Vai trò</th>
@@ -1331,24 +1331,24 @@ export function Admin() {
                                 </thead>
                                 <tbody className="text-sm">
                                     {filteredUsers.map((user) => (
-                                        <tr key={user.user_id} className="border-b border-slate-50 hover:bg-slate-50/50">
-                                            <td className="py-3 px-6 font-semibold text-slate-800">{user.full_name || 'Đang cập nhật'}</td>
-                                            <td className="py-3 px-6 text-slate-600">{user.email}</td>
+                                        <tr key={user.user_id} className="border-b border-slate-50 dark:border-dark-border hover:bg-slate-50/50 dark:hover:bg-dark-surface-hover">
+                                            <td className="py-3 px-6 font-semibold text-slate-800 dark:text-dark-text">{user.full_name || 'Đang cập nhật'}</td>
+                                            <td className="py-3 px-6 text-slate-600 dark:text-dark-text-muted">{user.email}</td>
                                             <td className="py-3 px-6">
-                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'}`}>
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300' : 'bg-slate-100 dark:bg-dark-surface-hover text-slate-600 dark:text-dark-text-muted'}`}>
                                                     {user.role}
                                                 </span>
                                             </td>
                                             <td className="py-3 px-6">
-                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
-                                                    user.status === 'banned' ? 'bg-rose-100 text-rose-700' :
-                                                        'bg-amber-100 text-amber-700'
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300' :
+                                                    user.status === 'banned' ? 'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300' :
+                                                        'bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                                                     }`}>{user.status}</span>
                                             </td>
                                             <td className="py-3 px-6">
                                                 <button
                                                     onClick={() => openUserOrdersModal(user)}
-                                                    className="text-indigo-600 hover:underline text-xs font-semibold"
+                                                    className="text-indigo-600 dark:text-dark-accent hover:underline text-xs font-semibold"
                                                     title="Xem lịch sử đơn hàng"
                                                 >
                                                     {user._count?.orders ?? 0} đơn / {user._count?.reviews ?? 0} reviews
@@ -1360,8 +1360,8 @@ export function Admin() {
                                                         onClick={() => handleToggleUserStatus(user.user_id, user.status)}
                                                         disabled={updatingUserId === user.user_id}
                                                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${user.status === 'banned'
-                                                            ? 'bg-emerald-50 text-emerald-700'
-                                                            : 'bg-rose-50 text-rose-700'
+                                                            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                                                            : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300'
                                                             }`}
                                                     >
                                                         {user.status === 'banned' ? (
@@ -1371,7 +1371,7 @@ export function Admin() {
                                                         )}
                                                     </button>
                                                 ) : (
-                                                    <span className="text-slate-400">—</span>
+                                                    <span className="text-slate-400 dark:text-dark-text-muted">—</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -1387,22 +1387,22 @@ export function Admin() {
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
                             </div>
                         ) : pendingReviews.length === 0 ? (
-                            <div className="bg-white rounded-2xl border p-12 text-center">
+                            <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border p-12 text-center">
                                 <CheckCircle className="mx-auto mb-2 text-emerald-500" />
-                                <p className="text-slate-500">Không có review chờ duyệt.</p>
+                                <p className="text-slate-500 dark:text-dark-text-muted">Không có review chờ duyệt.</p>
                             </div>
                         ) : (
                             pendingReviews.map((review) => (
-                                <div key={review.review_id} className="bg-white rounded-2xl border p-6">
+                                <div key={review.review_id} className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border p-6">
                                     <div className="flex justify-between mb-2">
                                         <div>
-                                            <p className="font-bold text-slate-800">{review.user?.full_name || review.user?.email}</p>
-                                            <p className="text-sm text-slate-500">Sách: {review.book?.title}</p>
+                                            <p className="font-bold text-slate-800 dark:text-dark-text">{review.user?.full_name || review.user?.email}</p>
+                                            <p className="text-sm text-slate-500 dark:text-dark-text-muted">Sách: {review.book?.title}</p>
                                         </div>
-                                        <span className="text-sm text-slate-500">{formatDate(review.created_at)}</span>
+                                        <span className="text-sm text-slate-500 dark:text-dark-text-muted">{formatDate(review.created_at)}</span>
                                     </div>
-                                    {review.title ? <p className="font-semibold text-slate-800 mb-1">{review.title}</p> : null}
-                                    {review.body ? <p className="text-slate-600 text-sm mb-4">{review.body}</p> : null}
+                                    {review.title ? <p className="font-semibold text-slate-800 dark:text-dark-text mb-1">{review.title}</p> : null}
+                                    {review.body ? <p className="text-slate-600 dark:text-dark-text-muted text-sm mb-4">{review.body}</p> : null}
                                     <div className="flex gap-3">
                                         <button
                                             onClick={() => handleReviewAction(review.review_id, 'approved')}
@@ -1412,7 +1412,7 @@ export function Admin() {
                                         </button>
                                         <button
                                             onClick={() => handleReviewAction(review.review_id, 'rejected')}
-                                            className="flex items-center gap-2 px-4 py-2 bg-rose-100 text-rose-700 rounded-lg text-sm"
+                                            className="flex items-center gap-2 px-4 py-2 bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 rounded-lg text-sm"
                                         >
                                             <XCircle size={16} /> Từ chối
                                         </button>
@@ -1424,14 +1424,14 @@ export function Admin() {
                 ) : activeTab === 'authors' ? (
                     <div className="space-y-4">
                         <div className="flex justify-end">
-                            <button onClick={openAddAuthorModal} className="bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center gap-2">
+                            <button onClick={openAddAuthorModal} className="bg-indigo-600 dark:bg-dark-accent text-white px-4 py-2 rounded-xl flex items-center gap-2">
                                 <Plus size={18} /> Thêm tác giả
                             </button>
                         </div>
-                        <div className="bg-white rounded-2xl border overflow-x-auto">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-x-auto">
                             <table className="w-full min-w-[800px] text-left">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b text-sm text-slate-500">
+                                    <tr className="bg-slate-50 dark:bg-dark-bg border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                         <th className="py-3 px-6">Tên tác giả</th>
                                         <th className="py-3 px-6">Slug</th>
                                         <th className="py-3 px-6">Số sách</th>
@@ -1440,12 +1440,12 @@ export function Admin() {
                                 </thead>
                                 <tbody className="text-sm">
                                     {(authorsLoading ? [] : authors).map((author) => (
-                                        <tr key={author.author_id} className="border-b border-slate-50">
-                                            <td className="py-3 px-6 font-semibold text-slate-800">{author.name}</td>
-                                            <td className="py-3 px-6 text-slate-600">{author.slug}</td>
+                                        <tr key={author.author_id} className="border-b border-slate-50 dark:border-dark-border">
+                                            <td className="py-3 px-6 font-semibold text-slate-800 dark:text-dark-text">{author.name}</td>
+                                            <td className="py-3 px-6 text-slate-600 dark:text-dark-text-muted">{author.slug}</td>
                                             <td className="py-3 px-6">{author._count?.book_authors ?? 0}</td>
                                             <td className="py-3 px-6 text-center">
-                                                <button onClick={() => openEditAuthorModal(author)} className="text-indigo-600">
+                                                <button onClick={() => openEditAuthorModal(author)} className="text-indigo-600 dark:text-dark-accent">
                                                     <Edit size={18} />
                                                 </button>
                                             </td>
@@ -1453,20 +1453,20 @@ export function Admin() {
                                     ))}
                                 </tbody>
                             </table>
-                            {authorsLoading ? <div className="p-6 text-center text-slate-500">Đang tải...</div> : null}
+                            {authorsLoading ? <div className="p-6 text-center text-slate-500 dark:text-dark-text-muted">Đang tải...</div> : null}
                         </div>
                     </div>
                 ) : activeTab === 'publishers' ? (
                     <div className="space-y-4">
                         <div className="flex justify-end">
-                            <button onClick={openAddPublisherModal} className="bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center gap-2">
+                            <button onClick={openAddPublisherModal} className="bg-indigo-600 dark:bg-dark-accent text-white px-4 py-2 rounded-xl flex items-center gap-2">
                                 <Plus size={18} /> Thêm nhà xuất bản
                             </button>
                         </div>
-                        <div className="bg-white rounded-2xl border overflow-x-auto">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-x-auto">
                             <table className="w-full min-w-[900px] text-left">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b text-sm text-slate-500">
+                                    <tr className="bg-slate-50 dark:bg-dark-bg border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                         <th className="py-3 px-6">Tên NXB</th>
                                         <th className="py-3 px-6">Slug</th>
                                         <th className="py-3 px-6">Website</th>
@@ -1476,12 +1476,12 @@ export function Admin() {
                                 </thead>
                                 <tbody className="text-sm">
                                     {(publishersLoading ? [] : publishers).map((publisher) => (
-                                        <tr key={publisher.publisher_id} className="border-b border-slate-50">
-                                            <td className="py-3 px-6 font-semibold text-slate-800">{publisher.name}</td>
-                                            <td className="py-3 px-6 text-slate-600">{publisher.slug}</td>
+                                        <tr key={publisher.publisher_id} className="border-b border-slate-50 dark:border-dark-border">
+                                            <td className="py-3 px-6 font-semibold text-slate-800 dark:text-dark-text">{publisher.name}</td>
+                                            <td className="py-3 px-6 text-slate-600 dark:text-dark-text-muted">{publisher.slug}</td>
                                             <td className="py-3 px-6">
                                                 {publisher.website ? (
-                                                    <a href={publisher.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-indigo-600">
+                                                    <a href={publisher.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-indigo-600 dark:text-dark-accent">
                                                         <Globe size={14} /> Mở link
                                                     </a>
                                                 ) : (
@@ -1490,7 +1490,7 @@ export function Admin() {
                                             </td>
                                             <td className="py-3 px-6">{publisher._count?.books ?? 0}</td>
                                             <td className="py-3 px-6 text-center">
-                                                <button onClick={() => openEditPublisherModal(publisher)} className="text-indigo-600">
+                                                <button onClick={() => openEditPublisherModal(publisher)} className="text-indigo-600 dark:text-dark-accent">
                                                     <Edit size={18} />
                                                 </button>
                                             </td>
@@ -1498,20 +1498,20 @@ export function Admin() {
                                     ))}
                                 </tbody>
                             </table>
-                            {publishersLoading ? <div className="p-6 text-center text-slate-500">Đang tải...</div> : null}
+                            {publishersLoading ? <div className="p-6 text-center text-slate-500 dark:text-dark-text-muted">Đang tải...</div> : null}
                         </div>
                     </div>
                 ) : activeTab === 'categories' ? (
                     <div className="space-y-4">
                         <div className="flex justify-end">
-                            <button onClick={openAddCategoryModal} className="bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center gap-2">
+                            <button onClick={openAddCategoryModal} className="bg-indigo-600 dark:bg-dark-accent text-white px-4 py-2 rounded-xl flex items-center gap-2">
                                 <Plus size={18} /> Thêm danh mục
                             </button>
                         </div>
-                        <div className="bg-white rounded-2xl border overflow-x-auto">
+                        <div className="bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-x-auto">
                             <table className="w-full min-w-[900px] text-left">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b text-sm text-slate-500">
+                                    <tr className="bg-slate-50 dark:bg-dark-bg border-b dark:border-dark-border text-sm text-slate-500 dark:text-dark-text-muted">
                                         <th className="py-3 px-6">Tên danh mục</th>
                                         <th className="py-3 px-6">Slug</th>
                                         <th className="py-3 px-6">Thứ tự ưu tiên (Sort)</th>
@@ -1521,16 +1521,16 @@ export function Admin() {
                                 </thead>
                                 <tbody className="text-sm">
                                     {(categoriesLoading ? [] : categories).map((cat) => (
-                                        <tr key={cat.category_id} className="border-b border-slate-50">
-                                            <td className="py-3 px-6 font-semibold text-slate-800">{cat.name}</td>
-                                            <td className="py-3 px-6 text-slate-600">{cat.slug}</td>
-                                            <td className="py-3 px-6 text-slate-600">{cat.sort_order}</td>
+                                        <tr key={cat.category_id} className="border-b border-slate-50 dark:border-dark-border">
+                                            <td className="py-3 px-6 font-semibold text-slate-800 dark:text-dark-text">{cat.name}</td>
+                                            <td className="py-3 px-6 text-slate-600 dark:text-dark-text-muted">{cat.slug}</td>
+                                            <td className="py-3 px-6 text-slate-600 dark:text-dark-text-muted">{cat.sort_order}</td>
                                             <td className="py-3 px-6">{cat._count?.book_categories ?? 0}</td>
                                             <td className="py-3 px-6 text-center">
                                                 <div className="flex justify-center gap-2">
                                                     <button
                                                         onClick={() => openEditCategoryModal(cat)}
-                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-medium transition-colors"
+                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-dark-surface-hover text-indigo-600 dark:text-dark-accent hover:bg-indigo-100 dark:hover:bg-slate-700 text-xs font-medium transition-colors"
                                                         title="Chỉnh sửa danh mục"
                                                     >
                                                         <Edit size={14} /> Sửa
@@ -1540,7 +1540,7 @@ export function Admin() {
                                                             if (window.confirm(`Chắc chắn xóa danh mục "${cat.name}"?\nLưu ý: Sẽ thất bại nếu danh mục đang có sách liên kết.`))
                                                                 handleDeleteCategory(cat.category_id);
                                                         }}
-                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-medium transition-colors"
+                                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-xs font-medium transition-colors"
                                                         title="Xóa danh mục"
                                                     >
                                                         <Trash2 size={14} /> Xóa
@@ -1551,7 +1551,7 @@ export function Admin() {
                                     ))}
                                 </tbody>
                             </table>
-                            {categoriesLoading ? <div className="p-6 text-center text-slate-500">Đang tải...</div> : null}
+                            {categoriesLoading ? <div className="p-6 text-center text-slate-500 dark:text-dark-text-muted">Đang tải...</div> : null}
                         </div>
                     </div>
                 ) : null}
@@ -1559,41 +1559,41 @@ export function Admin() {
 
             {showBookModal ? (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] flex flex-col">
-                        <div className="p-6 border-b flex justify-between">
-                            <h3 className="text-xl font-bold text-slate-800">{editingBookId ? 'Chỉnh sửa sách' : 'Thêm sách mới'}</h3>
-                            <button onClick={() => setShowBookModal(false)} className="text-slate-400 hover:text-rose-500">
+                    <div className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] flex flex-col">
+                        <div className="p-6 border-b dark:border-dark-border flex justify-between">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text">{editingBookId ? 'Chỉnh sửa sách' : 'Thêm sách mới'}</h3>
+                            <button onClick={() => setShowBookModal(false)} className="text-slate-400 dark:text-dark-text-muted hover:text-rose-500 dark:hover:text-rose-300">
                                 <X size={20} />
                             </button>
                         </div>
                         <form onSubmit={handleBookSubmit} className="p-6 space-y-4 overflow-y-auto">
-                            <input required value={bookForm.title} onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })} placeholder="Tên sách" className="w-full border border-slate-200 p-3 rounded-xl" />
-                            <input required value={bookForm.slug} onChange={(e) => setBookForm({ ...bookForm, slug: e.target.value })} placeholder="Slug" className="w-full border border-slate-200 p-3 rounded-xl" />
+                            <input required value={bookForm.title} onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })} placeholder="Tên sách" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                            <input required value={bookForm.slug} onChange={(e) => setBookForm({ ...bookForm, slug: e.target.value })} placeholder="Slug" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
                             <div className="grid grid-cols-2 gap-4">
-                                <input required type="number" value={bookForm.price} onChange={(e) => setBookForm({ ...bookForm, price: e.target.value })} placeholder="Giá" className="w-full border border-slate-200 p-3 rounded-xl" />
-                                <input required type="number" value={bookForm.stock_qty} onChange={(e) => setBookForm({ ...bookForm, stock_qty: e.target.value })} placeholder="Tồn kho" className="w-full border border-slate-200 p-3 rounded-xl" />
+                                <input required type="number" value={bookForm.price} onChange={(e) => setBookForm({ ...bookForm, price: e.target.value })} placeholder="Giá" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                                <input required type="number" value={bookForm.stock_qty} onChange={(e) => setBookForm({ ...bookForm, stock_qty: e.target.value })} placeholder="Tồn kho" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
                             </div>
                             <div className="flex gap-4 items-center">
                                 {bookForm.cover_url && (
-                                    <img src={bookForm.cover_url.startsWith('http') ? bookForm.cover_url : `${API_URL}${bookForm.cover_url}`} alt="Preview" className="w-16 h-16 object-cover rounded-xl border border-slate-200" />
+                                    <img src={bookForm.cover_url.startsWith('http') ? bookForm.cover_url : `${API_URL}${bookForm.cover_url}`} alt="Preview" className="w-16 h-16 object-cover rounded-xl border border-slate-200 dark:border-dark-border" />
                                 )}
                                 <div className="flex-1 space-y-2">
-                                    <input value={bookForm.cover_url} onChange={(e) => setBookForm({ ...bookForm, cover_url: e.target.value })} placeholder="URL ảnh bìa hoặc Upload" className="w-full border border-slate-200 p-3 rounded-xl" />
+                                    <input value={bookForm.cover_url} onChange={(e) => setBookForm({ ...bookForm, cover_url: e.target.value })} placeholder="URL ảnh bìa hoặc Upload" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
                                     <div className="flex items-center gap-2">
-                                        <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                                        <label className="cursor-pointer bg-slate-100 dark:bg-dark-surface-hover hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-dark-text px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                             {isUploadingImage ? 'Đang tải lên...' : 'Chọn ảnh từ máy tính'}
                                             <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploadingImage} />
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            <textarea rows={4} value={bookForm.description} onChange={(e) => setBookForm({ ...bookForm, description: e.target.value })} placeholder="Mô tả" className="w-full border border-slate-200 p-3 rounded-xl" />
+                            <textarea rows={4} value={bookForm.description} onChange={(e) => setBookForm({ ...bookForm, description: e.target.value })} placeholder="Mô tả" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
 
                             {/* ─── Extra Images Gallery Manager ─── */}
-                            <div className="border border-slate-200 rounded-xl p-4 space-y-3">
+                            <div className="border border-slate-200 dark:border-dark-border rounded-xl p-4 space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm font-semibold text-slate-700">🖼 Ảnh phụ (Gallery)</span>
-                                    <span className="text-xs text-slate-400">{bookForm.extra_images.length} ảnh</span>
+                                    <span className="text-sm font-semibold text-slate-700 dark:text-dark-text">🖼 Ảnh phụ (Gallery)</span>
+                                    <span className="text-xs text-slate-400 dark:text-dark-text-muted">{bookForm.extra_images.length} ảnh</span>
                                 </div>
 
                                 {/* Existing images */}
@@ -1604,7 +1604,7 @@ export function Admin() {
                                                 <img
                                                     src={url.startsWith('http') ? url : `${API_URL}${url}`}
                                                     alt={`Extra ${idx + 1}`}
-                                                    className="w-full h-full object-cover rounded-lg border border-slate-200"
+                                                    className="w-full h-full object-cover rounded-lg border border-slate-200 dark:border-dark-border"
                                                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/64x80?text=?'; }}
                                                 />
                                                 <button
@@ -1630,7 +1630,7 @@ export function Admin() {
                                         type="url"
                                         id="extra-image-url-input"
                                         placeholder="Dán URL ảnh phụ vào đây..."
-                                        className="flex-1 border border-slate-200 p-2.5 rounded-xl text-sm"
+                                        className="flex-1 border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-2.5 rounded-xl text-sm"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
@@ -1659,17 +1659,17 @@ export function Admin() {
                                                 input.value = '';
                                             }
                                         }}
-                                        className="px-4 py-2.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl text-sm font-medium transition-colors flex items-center gap-1"
+                                        className="px-4 py-2.5 bg-indigo-50 dark:bg-dark-surface-hover text-indigo-600 dark:text-dark-accent hover:bg-indigo-100 dark:hover:bg-slate-700 rounded-xl text-sm font-medium transition-colors flex items-center gap-1"
                                     >
                                         <Plus size={16} /> Thêm
                                     </button>
                                 </div>
-                                <p className="text-xs text-slate-400">Nhấn Enter hoặc bấm Thêm để thêm URL. Hover vào ảnh để xóa.</p>
+                                <p className="text-xs text-slate-400 dark:text-dark-text-muted">Nhấn Enter hoặc bấm Thêm để thêm URL. Hover vào ảnh để xóa.</p>
                             </div>
 
                             <div className="flex justify-end gap-3">
-                                <button type="button" onClick={() => setShowBookModal(false)} className="px-5 py-2 rounded-xl text-slate-600 hover:bg-slate-100">Hủy</button>
-                                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-semibold">{editingBookId ? 'Cập nhật' : 'Thêm mới'}</button>
+                                <button type="button" onClick={() => setShowBookModal(false)} className="px-5 py-2 rounded-xl text-slate-600 dark:text-dark-text-muted hover:bg-slate-100 dark:hover:bg-dark-surface-hover">Hủy</button>
+                                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 dark:bg-dark-accent text-white font-semibold">{editingBookId ? 'Cập nhật' : 'Thêm mới'}</button>
                             </div>
                         </form>
                     </div>
@@ -1678,19 +1678,19 @@ export function Admin() {
 
             {showAuthorModal ? (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl">
-                        <div className="p-6 border-b flex justify-between">
-                            <h3 className="text-xl font-bold text-slate-800">{editingAuthorId ? 'Cập nhật tác giả' : 'Thêm tác giả'}</h3>
-                            <button onClick={() => setShowAuthorModal(false)} className="text-slate-400 hover:text-rose-500"><X size={20} /></button>
+                    <div className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-xl shadow-2xl">
+                        <div className="p-6 border-b dark:border-dark-border flex justify-between">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text">{editingAuthorId ? 'Cập nhật tác giả' : 'Thêm tác giả'}</h3>
+                            <button onClick={() => setShowAuthorModal(false)} className="text-slate-400 dark:text-dark-text-muted hover:text-rose-500 dark:hover:text-rose-300"><X size={20} /></button>
                         </div>
                         <form onSubmit={handleAuthorSubmit} className="p-6 space-y-4">
-                            <input required value={authorForm.name} onChange={(e) => setAuthorForm({ ...authorForm, name: e.target.value })} placeholder="Tên tác giả" className="w-full border border-slate-200 p-3 rounded-xl" />
-                            <input required value={authorForm.slug} onChange={(e) => setAuthorForm({ ...authorForm, slug: e.target.value })} placeholder="Slug" className="w-full border border-slate-200 p-3 rounded-xl" />
-                            <input value={authorForm.avatar_url} onChange={(e) => setAuthorForm({ ...authorForm, avatar_url: e.target.value })} placeholder="Avatar URL (tuỳ chọn)" className="w-full border border-slate-200 p-3 rounded-xl" />
-                            <textarea rows={4} value={authorForm.bio} onChange={(e) => setAuthorForm({ ...authorForm, bio: e.target.value })} placeholder="Bio (tuỳ chọn)" className="w-full border border-slate-200 p-3 rounded-xl" />
+                            <input required value={authorForm.name} onChange={(e) => setAuthorForm({ ...authorForm, name: e.target.value })} placeholder="Tên tác giả" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                            <input required value={authorForm.slug} onChange={(e) => setAuthorForm({ ...authorForm, slug: e.target.value })} placeholder="Slug" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                            <input value={authorForm.avatar_url} onChange={(e) => setAuthorForm({ ...authorForm, avatar_url: e.target.value })} placeholder="Avatar URL (tuỳ chọn)" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                            <textarea rows={4} value={authorForm.bio} onChange={(e) => setAuthorForm({ ...authorForm, bio: e.target.value })} placeholder="Bio (tuỳ chọn)" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
                             <div className="flex justify-end gap-3">
-                                <button type="button" onClick={() => setShowAuthorModal(false)} className="px-5 py-2 rounded-xl text-slate-600 hover:bg-slate-100">Hủy</button>
-                                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-semibold">{editingAuthorId ? 'Cập nhật' : 'Thêm mới'}</button>
+                                <button type="button" onClick={() => setShowAuthorModal(false)} className="px-5 py-2 rounded-xl text-slate-600 dark:text-dark-text-muted hover:bg-slate-100 dark:hover:bg-dark-surface-hover">Hủy</button>
+                                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 dark:bg-dark-accent text-white font-semibold">{editingAuthorId ? 'Cập nhật' : 'Thêm mới'}</button>
                             </div>
                         </form>
                     </div>
@@ -1699,18 +1699,18 @@ export function Admin() {
 
             {showPublisherModal ? (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl">
-                        <div className="p-6 border-b flex justify-between">
-                            <h3 className="text-xl font-bold text-slate-800">{editingPublisherId ? 'Cập nhật nhà xuất bản' : 'Thêm nhà xuất bản'}</h3>
-                            <button onClick={() => setShowPublisherModal(false)} className="text-slate-400 hover:text-rose-500"><X size={20} /></button>
+                    <div className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-xl shadow-2xl">
+                        <div className="p-6 border-b dark:border-dark-border flex justify-between">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text">{editingPublisherId ? 'Cập nhật nhà xuất bản' : 'Thêm nhà xuất bản'}</h3>
+                            <button onClick={() => setShowPublisherModal(false)} className="text-slate-400 dark:text-dark-text-muted hover:text-rose-500 dark:hover:text-rose-300"><X size={20} /></button>
                         </div>
                         <form onSubmit={handlePublisherSubmit} className="p-6 space-y-4">
-                            <input required value={publisherForm.name} onChange={(e) => setPublisherForm({ ...publisherForm, name: e.target.value })} placeholder="Tên NXB" className="w-full border border-slate-200 p-3 rounded-xl" />
-                            <input required value={publisherForm.slug} onChange={(e) => setPublisherForm({ ...publisherForm, slug: e.target.value })} placeholder="Slug" className="w-full border border-slate-200 p-3 rounded-xl" />
-                            <input value={publisherForm.website} onChange={(e) => setPublisherForm({ ...publisherForm, website: e.target.value })} placeholder="Website (tuỳ chọn)" className="w-full border border-slate-200 p-3 rounded-xl" />
+                            <input required value={publisherForm.name} onChange={(e) => setPublisherForm({ ...publisherForm, name: e.target.value })} placeholder="Tên NXB" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                            <input required value={publisherForm.slug} onChange={(e) => setPublisherForm({ ...publisherForm, slug: e.target.value })} placeholder="Slug" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
+                            <input value={publisherForm.website} onChange={(e) => setPublisherForm({ ...publisherForm, website: e.target.value })} placeholder="Website (tuỳ chọn)" className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl" />
                             <div className="flex justify-end gap-3">
-                                <button type="button" onClick={() => setShowPublisherModal(false)} className="px-5 py-2 rounded-xl text-slate-600 hover:bg-slate-100">Hủy</button>
-                                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-semibold">{editingPublisherId ? 'Cập nhật' : 'Thêm mới'}</button>
+                                <button type="button" onClick={() => setShowPublisherModal(false)} className="px-5 py-2 rounded-xl text-slate-600 dark:text-dark-text-muted hover:bg-slate-100 dark:hover:bg-dark-surface-hover">Hủy</button>
+                                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 dark:bg-dark-accent text-white font-semibold">{editingPublisherId ? 'Cập nhật' : 'Thêm mới'}</button>
                             </div>
                         </form>
                     </div>
@@ -1719,35 +1719,35 @@ export function Admin() {
 
             {showCategoryModal ? (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl">
-                        <div className="p-6 border-b flex justify-between">
-                            <h3 className="text-xl font-bold text-slate-800">{editingCategoryId ? 'Cập nhật danh mục' : 'Thêm danh mục'}</h3>
-                            <button onClick={() => setShowCategoryModal(false)} className="text-slate-400 hover:text-rose-500"><X size={20} /></button>
+                    <div className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-xl shadow-2xl">
+                        <div className="p-6 border-b dark:border-dark-border flex justify-between">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text">{editingCategoryId ? 'Cập nhật danh mục' : 'Thêm danh mục'}</h3>
+                            <button onClick={() => setShowCategoryModal(false)} className="text-slate-400 dark:text-dark-text-muted hover:text-rose-500 dark:hover:text-rose-300"><X size={20} /></button>
                         </div>
                         <form onSubmit={handleCategorySubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Tên danh mục <span className="text-rose-500">*</span></label>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-dark-text mb-1">Tên danh mục <span className="text-rose-500 dark:text-rose-300">*</span></label>
                                 <input
                                     required
                                     value={categoryForm.name}
                                     onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
                                     placeholder="VD: Văn học, Kinh tế..."
-                                    className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                    className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Slug <span className="text-rose-500">*</span></label>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-dark-text mb-1">Slug <span className="text-rose-500 dark:text-rose-300">*</span></label>
                                 <input
                                     required
                                     value={categoryForm.slug}
                                     onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
                                     placeholder="VD: van-hoc, kinh-te"
-                                    className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                    className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Cấp độ</label>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-dark-text mb-1">Cấp độ</label>
                                     <input
                                         type="number"
                                         min={1}
@@ -1755,26 +1755,26 @@ export function Admin() {
                                         value={categoryForm.level}
                                         onChange={(e) => setCategoryForm({ ...categoryForm, level: e.target.value })}
                                         placeholder="1 = gốc, 2 = con..."
-                                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                        className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Thứ tự (Sort)</label>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-dark-text mb-1">Thứ tự (Sort)</label>
                                     <input
                                         type="number"
                                         value={categoryForm.sort_order}
                                         onChange={(e) => setCategoryForm({ ...categoryForm, sort_order: e.target.value })}
                                         placeholder="0, 1, 2..."
-                                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                        className="w-full border border-slate-200 dark:border-dark-border dark:bg-dark-bg p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Danh mục cha (ID) <span className="text-slate-400 font-normal">— tuỳ chọn</span></label>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-dark-text mb-1">Danh mục cha (ID) <span className="text-slate-400 dark:text-dark-text-muted font-normal">— tuỳ chọn</span></label>
                                 <select
                                     value={categoryForm.parent_id}
                                     onChange={(e) => setCategoryForm({ ...categoryForm, parent_id: e.target.value })}
-                                    className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+                                    className="w-full border border-slate-200 dark:border-dark-border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white dark:bg-dark-surface-hover"
                                 >
                                     <option value="">— Không có (danh mục gốc) —</option>
                                     {categories
@@ -1787,8 +1787,8 @@ export function Admin() {
                                 </select>
                             </div>
                             <div className="flex justify-end gap-3 pt-2">
-                                <button type="button" onClick={() => setShowCategoryModal(false)} className="px-5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 font-medium">Hủy</button>
-                                <button type="submit" className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-colors">{editingCategoryId ? 'Cập nhật' : 'Thêm mới'}</button>
+                                <button type="button" onClick={() => setShowCategoryModal(false)} className="px-5 py-2.5 rounded-xl text-slate-600 dark:text-dark-text-muted hover:bg-slate-100 dark:hover:bg-dark-surface-hover font-medium">Hủy</button>
+                                <button type="submit" className="px-5 py-2.5 rounded-xl bg-indigo-600 dark:bg-dark-accent hover:bg-indigo-700 dark:hover:bg-dark-accent-hover text-white font-semibold transition-colors">{editingCategoryId ? 'Cập nhật' : 'Thêm mới'}</button>
                             </div>
                         </form>
                     </div>
@@ -1798,17 +1798,17 @@ export function Admin() {
             {/* User Orders Modal */}
             {selectedUserForOrders ? (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 flex justify-center items-start p-4 overflow-y-auto">
-                    <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl my-8">
-                        <div className="p-6 border-b flex justify-between items-start">
+                    <div className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-3xl shadow-2xl my-8">
+                        <div className="p-6 border-b dark:border-dark-border flex justify-between items-start">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-800">
+                                <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text">
                                     Lịch sử đơn hàng
                                 </h3>
-                                <p className="text-sm text-slate-500 mt-0.5">
+                                <p className="text-sm text-slate-500 dark:text-dark-text-muted mt-0.5">
                                     {selectedUserForOrders.full_name || selectedUserForOrders.email} — {selectedUserForOrders.email}
                                 </p>
                             </div>
-                            <button onClick={() => setSelectedUserForOrders(null)} className="text-slate-400 hover:text-rose-500">
+                            <button onClick={() => setSelectedUserForOrders(null)} className="text-slate-400 dark:text-dark-text-muted hover:text-rose-500 dark:hover:text-rose-300">
                                 <X size={20} />
                             </button>
                         </div>
@@ -1818,29 +1818,29 @@ export function Admin() {
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
                                 </div>
                             ) : userOrders.length === 0 ? (
-                                <p className="text-center text-slate-500 py-8">Khách hàng này chưa có đơn hàng nào.</p>
+                                <p className="text-center text-slate-500 dark:text-dark-text-muted py-8">Khách hàng này chưa có đơn hàng nào.</p>
                             ) : (
                                 <div className="space-y-4">
                                     {userOrders.map((order: any) => {
                                         const sm = getOrderStatusMeta(order.status);
                                         return (
-                                            <div key={order.order_id} className="border rounded-xl overflow-hidden">
-                                                <div className="bg-slate-50 px-4 py-3 flex flex-wrap gap-3 justify-between items-center border-b">
-                                                    <span className="font-bold text-slate-800 text-sm">#{order.order_code}</span>
-                                                    <span className="text-xs text-slate-500">{formatDate(order.created_at)}</span>
-                                                    <span className="font-bold text-indigo-600 text-sm">{formatPrice(order.total_amount)}</span>
+                                            <div key={order.order_id} className="border dark:border-dark-border rounded-xl overflow-hidden">
+                                                <div className="bg-slate-50 dark:bg-dark-bg px-4 py-3 flex flex-wrap gap-3 justify-between items-center border-b dark:border-dark-border">
+                                                    <span className="font-bold text-slate-800 dark:text-dark-text text-sm">#{order.order_code}</span>
+                                                    <span className="text-xs text-slate-500 dark:text-dark-text-muted">{formatDate(order.created_at)}</span>
+                                                    <span className="font-bold text-indigo-600 dark:text-dark-accent text-sm">{formatPrice(order.total_amount)}</span>
                                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${sm.badgeClassName}`}>{sm.label}</span>
                                                 </div>
                                                 {order.items?.map((item: any, idx: number) => (
-                                                    <div key={idx} className="px-4 py-2 flex items-center gap-3 border-b last:border-0 text-sm">
+                                                    <div key={idx} className="px-4 py-2 flex items-center gap-3 border-b dark:border-dark-border last:border-0 text-sm">
                                                         <img
                                                             src={item.book?.cover_url ? (item.book.cover_url.startsWith('http') ? item.book.cover_url : `${API_URL}${item.book.cover_url}`) : 'https://placehold.co/40x56'}
                                                             alt={item.book?.title}
                                                             className="w-8 h-11 object-cover rounded"
                                                         />
-                                                        <span className="flex-1 text-slate-700">{item.book?.title}</span>
-                                                        <span className="text-slate-500">x{item.quantity}</span>
-                                                        <span className="text-slate-700 font-medium">{formatPrice(item.unit_price)}</span>
+                                                        <span className="flex-1 text-slate-700 dark:text-dark-text">{item.book?.title}</span>
+                                                        <span className="text-slate-500 dark:text-dark-text-muted">x{item.quantity}</span>
+                                                        <span className="text-slate-700 dark:text-dark-text font-medium">{formatPrice(item.unit_price)}</span>
                                                     </div>
                                                 ))}
                                             </div>

@@ -239,21 +239,21 @@ export function PaymentProcess() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex justify-center items-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 dark:border-dark-accent"></div>
             </div>
         );
     }
 
     if (loadError || !order) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
-                <p className="text-slate-700 font-medium mb-6 text-center">
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex flex-col items-center justify-center px-4">
+                <p className="text-slate-700 dark:text-dark-text font-medium mb-6 text-center">
                     {loadError || t('paymentProcess.loadFailed')}
                 </p>
                 <Link
                     to="/account"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 dark:bg-dark-accent text-white font-bold rounded-full hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors shadow-lg shadow-indigo-200"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     {t('paymentProcess.back')}
@@ -265,7 +265,7 @@ export function PaymentProcess() {
 
     if (isPaid || isCodConfirmed) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col items-center pt-20 px-4">
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex flex-col items-center pt-20 px-4">
                 <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -273,13 +273,13 @@ export function PaymentProcess() {
                 >
                     <CheckCircle2 className="w-24 h-24 text-emerald-500 mb-6" />
                 </motion.div>
-                <h1 className="text-3xl font-serif font-bold text-slate-900 mb-4 text-center max-w-xl">
+                <h1 className="text-3xl font-serif font-bold text-slate-900 dark:text-dark-text mb-4 text-center max-w-xl">
                     {isPaid ? t('paymentProcess.paid') : t('paymentProcess.codSuccess')}
                 </h1>
-                <p className="text-slate-600 mb-2 text-center max-w-md leading-relaxed">
+                <p className="text-slate-600 dark:text-dark-text-muted mb-2 text-center max-w-md leading-relaxed">
                     {isPaid ? t('paymentProcess.paidDesc') : t('paymentProcess.codSuccessDesc')}
                 </p>
-                <p className="text-sm text-slate-500 mb-8 text-center">
+                <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-8 text-center">
                     {t('paymentProcess.orderCode')} <strong>{order.order_code || order.order_id}</strong>
                     {' — '}
                     {formatAmount(order.total_amount)}
@@ -287,13 +287,13 @@ export function PaymentProcess() {
                 <div className="flex flex-col sm:flex-row gap-3">
                     <Link
                         to="/account"
-                        className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 text-center"
+                        className="px-8 py-3 bg-indigo-600 dark:bg-dark-accent text-white font-bold rounded-full hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors shadow-lg shadow-indigo-200 text-center"
                     >
                         {t('paymentProcess.viewOrders')}
                     </Link>
                     <Link
                         to="/"
-                        className="px-8 py-3 bg-white text-slate-700 font-bold rounded-full border border-slate-200 hover:bg-slate-100 transition-colors text-center"
+                        className="px-8 py-3 bg-white dark:bg-dark-surface text-slate-700 dark:text-dark-text font-bold rounded-full border border-slate-200 dark:border-dark-border hover:bg-slate-100 dark:hover:bg-dark-surface-hover transition-colors text-center"
                     >
                         {t('checkout.continueShopping')}
                     </Link>
@@ -303,42 +303,42 @@ export function PaymentProcess() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12">
+        <div className="min-h-screen bg-slate-50 dark:bg-dark-bg py-12">
             <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 mb-8 transition-colors font-medium"
+                    className="inline-flex items-center gap-2 text-slate-500 dark:text-dark-text-muted hover:text-indigo-600 dark:hover:text-dark-accent mb-8 transition-colors font-medium"
                 >
                     <ArrowLeft className="w-4 h-4" /> {t('paymentProcess.back')}
                 </button>
 
-                <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
-                    <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mb-2">
+                <div className="bg-white dark:bg-dark-surface p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-dark-border">
+                    <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 dark:text-dark-text mb-2">
                         {t('paymentProcess.title')}
                     </h1>
-                    <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+                    <p className="text-slate-500 dark:text-dark-text-muted text-sm mb-6 leading-relaxed">
                         {t('paymentProcess.subtitle')}
                     </p>
 
-                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-8 space-y-2 text-sm">
+                    <div className="bg-slate-50 dark:bg-dark-bg border border-slate-100 dark:border-dark-border rounded-2xl p-4 mb-8 space-y-2 text-sm">
                         <div className="flex justify-between gap-4">
-                            <span className="text-slate-500">{t('paymentProcess.orderCode')}</span>
-                            <span className="font-semibold text-slate-900">{order.order_code || order.order_id}</span>
+                            <span className="text-slate-500 dark:text-dark-text-muted">{t('paymentProcess.orderCode')}</span>
+                            <span className="font-semibold text-slate-900 dark:text-dark-text">{order.order_code || order.order_id}</span>
                         </div>
                         <div className="flex justify-between gap-4">
-                            <span className="text-slate-500">{t('paymentProcess.amount')}</span>
-                            <span className="font-bold text-indigo-600">{formatAmount(order.total_amount)}</span>
+                            <span className="text-slate-500 dark:text-dark-text-muted">{t('paymentProcess.amount')}</span>
+                            <span className="font-bold text-indigo-600 dark:text-dark-accent">{formatAmount(order.total_amount)}</span>
                         </div>
                         <div className="flex justify-between gap-4">
-                            <span className="text-slate-500">{t('paymentProcess.currentMethod')}</span>
-                            <span className="font-medium text-slate-900">
+                            <span className="text-slate-500 dark:text-dark-text-muted">{t('paymentProcess.currentMethod')}</span>
+                            <span className="font-medium text-slate-900 dark:text-dark-text">
                                 {methodOptions.find(o => o.value === order.payment_method)?.label || order.payment_method}
                             </span>
                         </div>
                     </div>
 
-                    <h2 className="text-lg font-bold text-slate-900 mb-3">{t('paymentProcess.chooseMethod')}</h2>
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-dark-text mb-3">{t('paymentProcess.chooseMethod')}</h2>
                     <div className="space-y-2 mb-6">
                         {methodOptions.map(({ value, icon: Icon, label }) => (
                             <button
@@ -347,34 +347,34 @@ export function PaymentProcess() {
                                 disabled={!!changingMethod}
                                 onClick={() => handleSelectMethod(value)}
                                 className={`w-full flex items-center gap-3 p-3 border rounded-xl text-left transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${selectedMethod === value
-                                    ? 'border-indigo-500 bg-indigo-50/60'
-                                    : 'border-slate-200 hover:bg-slate-50'
+                                    ? 'border-indigo-500 bg-indigo-50/60 dark:border-dark-accent dark:bg-dark-accent/15'
+                                    : 'border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-dark-surface-hover'
                                     }`}
                             >
-                                <Icon className="w-5 h-5 text-slate-600 shrink-0" />
-                                <span className="font-medium text-slate-700 text-sm flex-1">{label}</span>
+                                <Icon className="w-5 h-5 text-slate-600 dark:text-dark-text-muted shrink-0" />
+                                <span className="font-medium text-slate-700 dark:text-dark-text text-sm flex-1">{label}</span>
                                 {changingMethod === value && (
-                                    <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />
+                                    <Loader2 className="w-4 h-4 text-indigo-600 dark:text-dark-accent animate-spin" />
                                 )}
                             </button>
                         ))}
                     </div>
 
                     {changingMethod && (
-                        <p className="text-sm text-slate-500 mb-4 flex items-center gap-2">
+                        <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-4 flex items-center gap-2">
                             <Loader2 className="w-4 h-4 animate-spin" />
                             {t('paymentProcess.changingMethod')}
                         </p>
                     )}
 
                     {gateway && (
-                        <div className="border border-indigo-100 bg-indigo-50/40 rounded-2xl p-5 mb-6 text-center">
+                        <div className="border border-indigo-100 dark:border-indigo-900 bg-indigo-50/40 dark:bg-indigo-950/30 rounded-2xl p-5 mb-6 text-center">
                             {gateway.qrCode && (
                                 <div className="flex flex-col items-center gap-2 mb-5">
                                     <div className="bg-white p-3 rounded-2xl border border-slate-200">
                                         <QRCodeSVG value={gateway.qrCode} size={260} level="M" marginSize={2} />
                                     </div>
-                                    <p className="text-xs text-slate-500">{t('paymentProcess.scanQr')}</p>
+                                    <p className="text-xs text-slate-500 dark:text-dark-text-muted">{t('paymentProcess.scanQr')}</p>
                                 </div>
                             )}
                             {gateway.payUrl && (
@@ -382,13 +382,13 @@ export function PaymentProcess() {
                                     href={gateway.payUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 dark:bg-dark-accent text-white font-bold rounded-full hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors shadow-lg shadow-indigo-200"
                                 >
                                     <ExternalLink className="w-4 h-4" />
                                     {t('paymentProcess.openGateway')}
                                 </a>
                             )}
-                            <p className="mt-4 text-xs text-slate-500 leading-relaxed flex items-center justify-center gap-2">
+                            <p className="mt-4 text-xs text-slate-500 dark:text-dark-text-muted leading-relaxed flex items-center justify-center gap-2">
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                 {t('paymentProcess.pendingNote')}
                             </p>
@@ -396,7 +396,7 @@ export function PaymentProcess() {
                     )}
 
                     {!gateway && !changingMethod && (
-                        <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+                        <p className="text-xs text-slate-500 dark:text-dark-text-muted mb-6 leading-relaxed">
                             {t('paymentProcess.pendingNote')}
                         </p>
                     )}
@@ -405,7 +405,7 @@ export function PaymentProcess() {
                         type="button"
                         onClick={handleCancelOrder}
                         disabled={isCancelling}
-                        className="w-full flex items-center justify-center gap-2 bg-white text-rose-600 border border-rose-200 h-12 rounded-full font-bold hover:bg-rose-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 bg-white dark:bg-dark-surface text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-900 h-12 rounded-full font-bold hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         {isCancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                         {t('paymentProcess.cancelOrder')}

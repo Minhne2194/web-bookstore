@@ -217,19 +217,19 @@ export function Cart() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex justify-center items-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 dark:border-dark-accent"></div>
             </div>
         );
     }
 
     if (cartDetails.length === 0) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex flex-col items-center justify-center p-4">
                 <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png" alt="Empty Cart" className="w-64 h-64 object-contain mb-8 opacity-50" />
-                <h2 className="text-2xl font-serif font-bold text-slate-800 mb-4">{t('cart.emptyCartTitle')}</h2>
-                <p className="text-slate-500 mb-8 text-center">{t('cart.emptyCartDesc')}</p>
-                <Link to="/search" className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 transition-colors">
+                <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-dark-text mb-4">{t('cart.emptyCartTitle')}</h2>
+                <p className="text-slate-500 dark:text-dark-text-muted mb-8 text-center">{t('cart.emptyCartDesc')}</p>
+                <Link to="/search" className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 dark:bg-dark-accent dark:hover:bg-dark-accent-hover transition-colors">
                     {t('cart.continueShopping')}
                 </Link>
             </div>
@@ -238,9 +238,9 @@ export function Cart() {
 
     return (
         <>
-        <div className="min-h-screen bg-slate-50 py-12">
+        <div className="min-h-screen bg-slate-50 dark:bg-dark-bg py-12">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-serif font-bold text-slate-900 mb-8">{t('cart.cartTitle')}</h1>
+                <h1 className="text-3xl font-serif font-bold text-slate-900 dark:text-dark-text mb-8">{t('cart.cartTitle')}</h1>
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-4">
@@ -248,15 +248,15 @@ export function Cart() {
                             <motion.div
                                 layout
                                 key={item.bookId}
-                                className="bg-white p-4 flex gap-4 rounded-2xl shadow-sm border border-slate-100 items-center"
+                                className="bg-white dark:bg-dark-surface p-4 flex gap-4 rounded-2xl shadow-sm border border-slate-100 dark:border-dark-border items-center"
                             >
                                 <SafeImage src={item.cover_url || "https://placehold.co/100x150"} alt={item.title} className="w-20 h-28 object-cover rounded-lg shadow-sm" />
                                 <div className="flex-1">
-                                    <Link to={`/book/${item.bookId}`} className="font-bold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-1">
+                                    <Link to={`/book/${item.bookId}`} className="font-bold text-slate-900 dark:text-dark-text hover:text-indigo-600 dark:hover:text-dark-accent transition-colors line-clamp-1">
                                         {item.title}
                                     </Link>
-                                    <p className="text-sm text-slate-500 mb-2">{item.author || t('cart.updating')}</p>
-                                    <p className="font-bold text-indigo-600">{formatPrice(item.price!)}</p>
+                                    <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-2">{item.author || t('cart.updating')}</p>
+                                    <p className="font-bold text-indigo-600 dark:text-dark-accent">{formatPrice(item.price!)}</p>
                                 </div>
 
                                 <div className="flex flex-col items-end gap-4">
@@ -268,14 +268,14 @@ export function Cart() {
                                             {t('cart.deleteConfirm')}
                                         </button>
                                     ) : (
-                                        <button onClick={() => handleRemove(item.bookId)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
+                                        <button onClick={() => handleRemove(item.bookId)} className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-full transition-colors">
                                             <Trash2 className="w-5 h-5" />
                                         </button>
                                     )}
-                                    <div className="flex items-center border border-slate-200 rounded-full bg-slate-50">
-                                        <button onClick={() => handleUpdateQuantity(item.bookId, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-indigo-600 font-bold">-</button>
-                                        <span className="w-8 text-center font-bold text-slate-900 text-sm">{item.quantity}</span>
-                                        <button onClick={() => handleUpdateQuantity(item.bookId, item.quantity + 1)} className="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-indigo-600 font-bold">+</button>
+                                    <div className="flex items-center border border-slate-200 dark:border-dark-border rounded-full bg-slate-50 dark:bg-dark-bg">
+                                        <button onClick={() => handleUpdateQuantity(item.bookId, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center text-slate-600 dark:text-dark-text-muted hover:text-indigo-600 dark:hover:text-dark-accent font-bold">-</button>
+                                        <span className="w-8 text-center font-bold text-slate-900 dark:text-dark-text text-sm">{item.quantity}</span>
+                                        <button onClick={() => handleUpdateQuantity(item.bookId, item.quantity + 1)} className="w-8 h-8 flex items-center justify-center text-slate-600 dark:text-dark-text-muted hover:text-indigo-600 dark:hover:text-dark-accent font-bold">+</button>
                                     </div>
                                 </div>
                             </motion.div>
@@ -283,27 +283,27 @@ export function Cart() {
                     </div>
 
                     <div className="lg:col-span-1">
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 sticky top-24">
-                            <h3 className="text-lg font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100">{t('cart.totalTitle')}</h3>
+                        <div className="bg-white dark:bg-dark-surface p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-dark-border sticky top-24">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-dark-text mb-6 pb-4 border-b border-slate-100 dark:border-dark-border">{t('cart.totalTitle')}</h3>
 
                             <div className="space-y-3 mb-6">
-                                <div className="flex justify-between text-slate-600">
+                                <div className="flex justify-between text-slate-600 dark:text-dark-text-muted">
                                     <span>{t('cart.subtotal')}</span>
                                     <span>{formatPrice(subtotal)}</span>
                                 </div>
-                                <div className="flex justify-between text-slate-600">
+                                <div className="flex justify-between text-slate-600 dark:text-dark-text-muted">
                                     <span>{t('cart.shippingFee')}</span>
                                     {appliedPromo && appliedPromo.type === 'free_shipping' ? (
                                         <div className="flex items-center gap-2">
-                                            <span className="text-slate-400 line-through text-sm">{formatPrice(shippingFee)}</span>
-                                            <span className="text-emerald-600 font-medium">{formatPrice(0)}</span>
+                                            <span className="text-slate-400 dark:text-dark-text-muted line-through text-sm">{formatPrice(shippingFee)}</span>
+                                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">{formatPrice(0)}</span>
                                         </div>
                                     ) : (
                                         <span>{formatPrice(shippingFee)}</span>
                                     )}
                                 </div>
                                 {appliedPromo && appliedPromo.type !== 'free_shipping' && (
-                                    <div className="flex justify-between text-emerald-600">
+                                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                                         <span>{t('cart.discount')}</span>
                                         <span className="font-medium">-{formatPrice(calculatedDiscount)}</span>
                                     </div>
@@ -311,24 +311,24 @@ export function Cart() {
                             </div>
 
                             {appliedPromo && (
-                                <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-700">
+                                <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 rounded-xl text-sm text-emerald-700 dark:text-emerald-300">
                                     <CheckCircle2 className="w-4 h-4" />
                                     <span>{t('cart.appliedPromoText')}<strong>{appliedPromo.code}</strong> — {appliedPromo.description}</span>
-                                    <button onClick={handleRemovePromo} className="ml-auto p-0.5 hover:bg-emerald-200 rounded transition-colors">
+                                    <button onClick={handleRemovePromo} className="ml-auto p-0.5 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 rounded transition-colors">
                                         <X className="w-4 h-4" />
                                     </button>
                                 </div>
                             )}
 
-                            <div className="flex justify-between items-end mb-4 pt-4 border-t border-slate-100">
-                                <span className="font-bold text-slate-900">{t('cart.totalPayment')}</span>
-                                <span className="text-2xl font-bold text-indigo-600">{formatPrice(effectiveTotal)}</span>
+                            <div className="flex justify-between items-end mb-4 pt-4 border-t border-slate-100 dark:border-dark-border">
+                                <span className="font-bold text-slate-900 dark:text-dark-text">{t('cart.totalPayment')}</span>
+                                <span className="text-2xl font-bold text-indigo-600 dark:text-dark-accent">{formatPrice(effectiveTotal)}</span>
                             </div>
 
                             <div className="mb-6">
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
-                                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-dark-text-muted" />
                                         <input
                                             type="text"
                                             value={promoCode}
@@ -336,14 +336,14 @@ export function Cart() {
                                             onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                                             placeholder={t('cart.promoCodePlaceholder')}
                                             disabled={!!appliedPromo}
-                                            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:bg-slate-50 disabled:text-slate-400"
+                                            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 dark:border-dark-border rounded-xl dark:bg-dark-surface-hover dark:text-dark-text dark:placeholder:text-dark-text-muted focus:ring-2 focus:ring-indigo-500 dark:focus:ring-dark-accent focus:outline-none disabled:bg-slate-50 dark:disabled:bg-dark-bg disabled:text-slate-400 dark:disabled:text-dark-text-muted"
                                         />
                                     </div>
                                     {!appliedPromo ? (
                                         <button
                                             onClick={handleApplyPromo}
                                             disabled={isValidatingPromo || !promoCode.trim()}
-                                            className="px-4 py-2 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="px-4 py-2 bg-slate-800 dark:bg-dark-surface-hover text-white text-sm font-semibold rounded-xl hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                         >
                                             {isValidatingPromo ? '...' : t('cart.apply')}
                                         </button>
@@ -360,7 +360,7 @@ export function Cart() {
                                         navigate(appliedPromo ? `/checkout?promo=${appliedPromo.code}` : '/checkout');
                                     }
                                 }}
-                                className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white h-12 rounded-full font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                                className="w-full flex items-center justify-center gap-2 bg-indigo-600 dark:bg-dark-accent text-white h-12 rounded-full font-bold hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors shadow-lg shadow-indigo-200 dark:shadow-none"
                             >
                                 {t('cart.checkoutProcess')} <ArrowRight className="w-5 h-5" />
                             </button>
@@ -373,14 +373,14 @@ export function Cart() {
             {/* ── Có thể bạn cũng thích ── */}
             {suggestions.length > 0 && (
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-16">
-                    <h2 className="text-2xl font-serif font-bold text-slate-900 mb-6">{t('cart.youMightAlsoLike')}</h2>
+                    <h2 className="text-2xl font-serif font-bold text-slate-900 dark:text-dark-text mb-6">{t('cart.youMightAlsoLike')}</h2>
                     <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar scroll-smooth">
                         {suggestions.map((sb, idx) => (
                             <div
                                 key={`sug-${sb.book_id}-${idx}`}
-                                className="w-[150px] md:w-[170px] shrink-0 bg-white border border-slate-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow flex flex-col group"
+                                className="w-[150px] md:w-[170px] shrink-0 bg-white dark:bg-dark-surface border border-slate-100 dark:border-dark-border rounded-xl overflow-hidden hover:shadow-md transition-shadow flex flex-col group"
                             >
-                                <Link to={`/book/${sb.book_id}`} className="block relative overflow-hidden bg-slate-50 p-3 aspect-2/3">
+                                <Link to={`/book/${sb.book_id}`} className="block relative overflow-hidden bg-slate-50 dark:bg-dark-bg p-3 aspect-2/3">
                                     <SafeImage
                                         src={sb.cover_url || 'https://placehold.co/200x300'}
                                         alt={sb.title}
@@ -389,21 +389,21 @@ export function Cart() {
                                 </Link>
                                 <div className="p-3 flex flex-col flex-1">
                                     <Link to={`/book/${sb.book_id}`}>
-                                        <h3 className="text-xs font-semibold text-slate-900 line-clamp-2 hover:text-indigo-600 transition-colors mb-1">{sb.title}</h3>
+                                        <h3 className="text-xs font-semibold text-slate-900 dark:text-dark-text line-clamp-2 hover:text-indigo-600 dark:hover:text-dark-accent transition-colors mb-1">{sb.title}</h3>
                                     </Link>
-                                    <p className="text-xs text-slate-500 mb-1 truncate">{sb.author}</p>
+                                    <p className="text-xs text-slate-500 dark:text-dark-text-muted mb-1 truncate">{sb.author}</p>
                                     {sb.avg_rating > 0 && (
                                         <div className="flex items-center gap-1 mb-1">
                                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                                            <span className="text-xs text-slate-600">{Number(sb.avg_rating).toFixed(1)}</span>
+                                            <span className="text-xs text-slate-600 dark:text-dark-text-muted">{Number(sb.avg_rating).toFixed(1)}</span>
                                         </div>
                                     )}
-                                    <p className="text-indigo-600 font-bold text-sm mt-auto">
+                                    <p className="text-indigo-600 dark:text-dark-accent font-bold text-sm mt-auto">
                                         {formatPrice(sb.price)}
                                     </p>
                                     <button
                                         onClick={() => handleAddToCart(sb.book_id)}
-                                        className="mt-2 w-full bg-slate-900 text-white py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-600 transition-colors flex items-center justify-center gap-1"
+                                        className="mt-2 w-full bg-slate-900 dark:bg-dark-accent text-white py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-600 dark:hover:bg-dark-accent-hover transition-colors flex items-center justify-center gap-1"
                                     >
                                         <ShoppingCart className="w-3 h-3" /> {t('cart.addToCart')}
                                     </button>

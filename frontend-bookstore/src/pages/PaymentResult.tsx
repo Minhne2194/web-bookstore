@@ -72,21 +72,21 @@ export function PaymentResult() {
 
     if (isSuccess === null) {
         return (
-            <div className="min-h-screen bg-slate-50 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-dark-accent"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 py-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex flex-col items-center justify-center px-4 py-20">
             <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 className="max-w-md w-full"
             >
-                <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8 md:p-12 text-center">
+                <div className="bg-white dark:bg-dark-surface rounded-3xl shadow-lg border border-slate-100 dark:border-dark-border p-8 md:p-12 text-center">
                     {isSuccess ? (
                         <>
                             <motion.div
@@ -94,23 +94,23 @@ export function PaymentResult() {
                                 animate={{ scale: 1 }}
                                 transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
                             >
-                                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+                                <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                             </motion.div>
-                            <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mb-4">
+                            <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 dark:text-dark-text mb-4">
                                 {t('paymentResult.successTitle')}
                             </h1>
-                            <p className="text-slate-600 mb-2">
+                            <p className="text-slate-600 dark:text-dark-text-muted mb-2">
                                 {message}
                             </p>
                             {orderId && (
-                                <p className="text-sm text-slate-500 mb-6">
+                                <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-6">
                                     {t('paymentResult.orderCode')} <strong>{orderId}</strong>
                                 </p>
                             )}
-                            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-8">
-                                <p className="text-emerald-700 text-sm">
+                            <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 rounded-xl p-4 mb-8">
+                                <p className="text-emerald-700 dark:text-emerald-300 text-sm">
                                     {t('paymentResult.successDesc')}
                                 </p>
                             </div>
@@ -122,23 +122,23 @@ export function PaymentResult() {
                                 animate={{ scale: 1 }}
                                 transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
                             >
-                                <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <XCircle className="w-10 h-10 text-rose-600" />
+                                <div className="w-20 h-20 bg-rose-100 dark:bg-rose-900/40 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <XCircle className="w-10 h-10 text-rose-600 dark:text-rose-300" />
                                 </div>
                             </motion.div>
-                            <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mb-4">
+                            <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 dark:text-dark-text mb-4">
                                 {t('paymentResult.failedTitle')}
                             </h1>
-                            <p className="text-slate-600 mb-6">
+                            <p className="text-slate-600 dark:text-dark-text-muted mb-6">
                                 {message}
                             </p>
                             {orderId && (
-                                <p className="text-sm text-slate-500 mb-6">
+                                <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-6">
                                     {t('paymentResult.orderCode')} <strong>{orderId}</strong>
                                 </p>
                             )}
-                            <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 mb-8">
-                                <p className="text-amber-700 text-sm">
+                            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900 rounded-xl p-4 mb-8">
+                                <p className="text-amber-700 dark:text-amber-300 text-sm">
                                     {t('paymentResult.failedDesc')}
                                 </p>
                             </div>
@@ -149,7 +149,7 @@ export function PaymentResult() {
                         {isSuccess ? (
                             <Link
                                 to="/account"
-                                className="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white px-6 py-3 rounded-full font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                                className="flex items-center justify-center gap-2 w-full bg-indigo-600 dark:bg-dark-accent text-white px-6 py-3 rounded-full font-bold hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors shadow-lg shadow-indigo-200"
                             >
                                 <Package className="w-5 h-5" />
                                 {t('paymentResult.viewOrders')}
@@ -167,13 +167,13 @@ export function PaymentResult() {
                                 )}
                                 <Link
                                     to={`/account?orderId=${orderId}`}
-                                    className="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white px-6 py-3 rounded-full font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                                    className="flex items-center justify-center gap-2 w-full bg-indigo-600 dark:bg-dark-accent text-white px-6 py-3 rounded-full font-bold hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors shadow-lg shadow-indigo-200"
                                 >
                                     {t('paymentResult.retryPayment')}
                                 </Link>
                                 <Link
                                     to="/contact-support"
-                                    className="flex items-center justify-center gap-2 w-full bg-slate-100 text-slate-700 px-6 py-3 rounded-full font-bold hover:bg-slate-200 transition-colors"
+                                    className="flex items-center justify-center gap-2 w-full bg-slate-100 dark:bg-dark-surface-hover text-slate-700 dark:text-dark-text px-6 py-3 rounded-full font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                                 >
                                     {t('paymentResult.contactSupport')}
                                 </Link>
@@ -181,10 +181,10 @@ export function PaymentResult() {
                         )}
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-100">
+                    <div className="mt-8 pt-6 border-t border-slate-100 dark:border-dark-border">
                         <Link
                             to="/"
-                            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors"
+                            className="inline-flex items-center gap-2 text-indigo-600 dark:text-dark-accent hover:text-indigo-800 dark:hover:text-dark-accent-hover font-medium text-sm transition-colors"
                         >
                             <ArrowRight className="w-4 h-4 rotate-180" />
                             {t('paymentResult.backToHome')}

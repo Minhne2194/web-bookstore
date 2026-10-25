@@ -420,20 +420,20 @@ export function Account() {
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen py-12 px-4">
+    <div className="bg-slate-50 dark:bg-dark-bg min-h-screen py-12 px-4">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-serif font-bold text-slate-900 mb-8">{t('account.myAccount')}</h1>
+        <h1 className="text-3xl font-serif font-bold text-slate-900 dark:text-dark-text mb-8">{t('account.myAccount')}</h1>
 
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-64 shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sticky top-24">
+            <div className="bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-slate-100 dark:border-dark-border p-4 sticky top-24">
               <div className="flex items-center gap-3 mb-6 px-4">
-                <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xl uppercase shrink-0">
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-dark-accent rounded-full flex items-center justify-center font-bold text-xl uppercase shrink-0">
                   {profile?.full_name?.charAt(0) || profile?.email?.charAt(0) || 'U'}
                 </div>
                 <div className="overflow-hidden">
-                  <p className="font-bold text-slate-900 truncate">{profile?.full_name || t('account.member')}</p>
-                  <p className="text-sm text-slate-500 truncate">{profile?.email}</p>
+                  <p className="font-bold text-slate-900 dark:text-dark-text truncate">{profile?.full_name || t('account.member')}</p>
+                  <p className="text-sm text-slate-500 dark:text-dark-text-muted truncate">{profile?.email}</p>
                 </div>
               </div>
 
@@ -444,7 +444,7 @@ export function Account() {
                     setMessage({ type: '', text: '' });
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
-                    activeTab === 'profile' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'
+                    activeTab === 'profile' ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-dark-accent' : 'text-slate-600 dark:text-dark-text-muted hover:bg-slate-50 dark:hover:bg-dark-surface-hover'
                   }`}
                 >
                   <User size={20} /> {t('account.personalInfo')}
@@ -452,7 +452,7 @@ export function Account() {
                 <button
                   onClick={() => setActiveTab('orders')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
-                    activeTab === 'orders' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'
+                    activeTab === 'orders' ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-dark-accent' : 'text-slate-600 dark:text-dark-text-muted hover:bg-slate-50 dark:hover:bg-dark-surface-hover'
                   }`}
                 >
                   <ShoppingBag size={20} /> {t('account.orderHistory')}
@@ -460,13 +460,13 @@ export function Account() {
                 <button
                   onClick={() => setActiveTab('addresses')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
-                    activeTab === 'addresses' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'
+                    activeTab === 'addresses' ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-dark-accent' : 'text-slate-600 dark:text-dark-text-muted hover:bg-slate-50 dark:hover:bg-dark-surface-hover'
                   }`}
                 >
                   <MapPin size={20} /> {t('account.addressBook')}
                 </button>
-                <div className="h-px bg-slate-100 my-2 mx-4" />
-                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-rose-600 hover:bg-rose-50">
+                <div className="h-px bg-slate-100 dark:bg-dark-border my-2 mx-4" />
+                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40">
                   <LogOut size={20} /> {t('account.logout')}
                 </button>
               </nav>
@@ -476,15 +476,15 @@ export function Account() {
           <div className="flex-1">
             {/* --- Profile Tab --- */}
             {activeTab === 'profile' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-                <h2 className="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100">{t('account.personalInfo')}</h2>
+              <div className="bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-slate-100 dark:border-dark-border p-6 md:p-8">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-dark-text mb-6 pb-4 border-b border-slate-100 dark:border-dark-border">{t('account.personalInfo')}</h2>
 
                 {message.text && (
                   <div
                     className={`mb-6 p-4 rounded-xl flex items-center gap-3 text-sm font-medium ${
                       message.type === 'success'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                        : 'bg-rose-50 text-rose-700 border-rose-100'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900'
+                        : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-900'
                     }`}
                   >
                     {message.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
@@ -494,43 +494,43 @@ export function Account() {
 
                 <form className="space-y-6 max-w-lg" onSubmit={handleUpdateProfile}>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">{t('account.fullName')}</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.fullName')}</label>
                     <input
                       type="text"
                       value={editFullName}
                       onChange={(e) => setEditFullName(e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border dark:border-dark-border dark:bg-dark-bg dark:text-dark-text rounded-lg focus:ring-2 focus:ring-indigo-500"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">{t('account.email')}</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.email')}</label>
                     <input
                       type="email"
                       disabled
-                      className="w-full px-4 py-2 bg-slate-50 border text-slate-500 rounded-lg"
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-dark-bg border dark:border-dark-border text-slate-500 dark:text-dark-text-muted rounded-lg"
                       value={profile?.email || ''}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">{t('account.phone')}</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.phone')}</label>
                     <input
                       type="tel"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border dark:border-dark-border dark:bg-dark-bg dark:text-dark-text rounded-lg focus:ring-2 focus:ring-indigo-500"
                       placeholder={t('account.phonePlaceholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">{t('account.gender')}</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.gender')}</label>
                     <select
                       value={editGender}
                       onChange={(e) => setEditGender(e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white"
+                      className="w-full px-4 py-2 border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-dark-bg dark:text-dark-text"
                     >
                       <option value="">{t('account.notUpdated')}</option>
                       <option value="male">{t('account.male')}</option>
@@ -540,30 +540,30 @@ export function Account() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">{t('account.birthday')}</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.birthday')}</label>
                     <input
                       type="date"
                       value={editBirthday}
                       onChange={(e) => setEditBirthday(e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border dark:border-dark-border dark:bg-dark-bg dark:text-dark-text rounded-lg focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
 
-                  <button type="submit" disabled={isSaving} className="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-70">
+                  <button type="submit" disabled={isSaving} className="px-6 py-2.5 bg-indigo-600 dark:bg-dark-accent text-white font-bold rounded-lg hover:bg-indigo-700 dark:hover:bg-dark-accent-hover disabled:opacity-70">
                     {isSaving ? t('account.saving') : t('account.saveChanges')}
                   </button>
                 </form>
 
-                <div className="mt-12 pt-8 border-t border-rose-100">
-                  <h3 className="text-lg font-bold text-rose-600 mb-2 flex items-center gap-2">
+                <div className="mt-12 pt-8 border-t border-rose-100 dark:border-rose-900">
+                  <h3 className="text-lg font-bold text-rose-600 dark:text-rose-300 mb-2 flex items-center gap-2">
                     <AlertCircle size={20} /> {t('account.deleteAccount')}
                   </h3>
-                  <p className="text-sm text-slate-500 mb-5 leading-relaxed max-w-lg">
+                  <p className="text-sm text-slate-500 dark:text-dark-text-muted mb-5 leading-relaxed max-w-lg">
                     {t('account.deleteAccountWarning')}
                   </p>
                   <button
                     onClick={handleDeleteAccount}
-                    className="px-5 py-2.5 bg-white border-2 border-rose-600 text-rose-600 font-bold rounded-lg hover:bg-rose-50 hover:text-rose-700 transition-colors"
+                    className="px-5 py-2.5 bg-white dark:bg-dark-surface border-2 border-rose-600 dark:border-rose-700 text-rose-600 dark:text-rose-300 font-bold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-700 transition-colors"
                   >
                     {t('account.deleteAccountConfirm')}
                   </button>
@@ -573,44 +573,44 @@ export function Account() {
 
             {/* --- Orders Tab --- */}
             {activeTab === 'orders' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-                <h2 className="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100">{t('account.orderHistory')}</h2>
+              <div className="bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-slate-100 dark:border-dark-border p-6 md:p-8">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-dark-text mb-6 pb-4 border-b border-slate-100 dark:border-dark-border">{t('account.orderHistory')}</h2>
 
                 {orders.length === 0 ? (
                   <div className="text-center py-12">
-                    <ShoppingBag className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-                    <p className="text-slate-500 font-medium">{t('account.noOrders')}</p>
+                    <ShoppingBag className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                    <p className="text-slate-500 dark:text-dark-text-muted font-medium">{t('account.noOrders')}</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     {orders.map((order) => (
-                      <div key={order.order_code} className="border rounded-xl overflow-hidden">
-                        <div className="bg-slate-50 px-6 py-4 flex flex-wrap gap-4 justify-between items-center border-b">
+                      <div key={order.order_code} className="border dark:border-dark-border rounded-xl overflow-hidden">
+                        <div className="bg-slate-50 dark:bg-dark-bg px-6 py-4 flex flex-wrap gap-4 justify-between items-center border-b dark:border-dark-border">
                           <div>
-                            <p className="text-sm text-slate-500">{t('account.orderCode')}</p>
+                            <p className="text-sm text-slate-500 dark:text-dark-text-muted">{t('account.orderCode')}</p>
                             <p className="font-bold">{order.order_code}</p>
                           </div>
                           <div>
-                            <p className="text-sm text-slate-500">{t('account.orderDate')}</p>
+                            <p className="text-sm text-slate-500 dark:text-dark-text-muted">{t('account.orderDate')}</p>
                             <p className="font-bold">{formatDate(order.created_at)}</p>
                           </div>
                           <div>
-                            <p className="text-sm text-slate-500">{t('account.totalAmount')}</p>
-                            <p className="font-bold text-indigo-600">{formatPrice(order.total_amount)}</p>
+                            <p className="text-sm text-slate-500 dark:text-dark-text-muted">{t('account.totalAmount')}</p>
+                            <p className="font-bold text-indigo-600 dark:text-dark-accent">{formatPrice(order.total_amount)}</p>
                           </div>
                           <div>{renderStatusBadge(order.status)}</div>
                         </div>
 
                         {order.items?.map((item, index) => (
-                          <div key={`${order.order_code}-${index}`} className="px-6 py-4 flex items-center gap-4 border-b last:border-0">
+                          <div key={`${order.order_code}-${index}`} className="px-6 py-4 flex items-center gap-4 border-b dark:border-dark-border last:border-0">
                             <img
                               src={item.book.cover_url || 'https://placehold.co/100x150'}
                               alt={item.book.title}
-                              className="w-16 h-20 bg-slate-200 rounded object-cover"
+                              className="w-16 h-20 bg-slate-200 dark:bg-dark-surface-hover rounded object-cover"
                             />
                             <div>
-                              <p className="font-bold text-slate-900">{item.book.title}</p>
-                              <p className="text-sm text-slate-500">
+                              <p className="font-bold text-slate-900 dark:text-dark-text">{item.book.title}</p>
+                              <p className="text-sm text-slate-500 dark:text-dark-text-muted">
                                 {t('account.quantity')}: {item.quantity} x {formatPrice(item.unit_price)}
                               </p>
                             </div>
@@ -625,13 +625,13 @@ export function Account() {
 
             {/* --- Addresses Tab --- */}
             {activeTab === 'addresses' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-                <div className="flex justify-between items-center mb-6 pb-4 border-b">
-                  <h2 className="text-xl font-bold text-slate-900">{t('account.addressBook')}</h2>
+              <div className="bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-slate-100 dark:border-dark-border p-6 md:p-8">
+                <div className="flex justify-between items-center mb-6 pb-4 border-b dark:border-dark-border">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-dark-text">{t('account.addressBook')}</h2>
                   {!showAddressForm && (
                     <button
                       onClick={openAddForm}
-                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 dark:bg-dark-accent text-white rounded-lg text-sm font-medium hover:bg-indigo-700 dark:hover:bg-dark-accent-hover transition-colors"
                     >
                       <Plus size={18} /> {t('account.addNewAddress')}
                     </button>
@@ -640,8 +640,8 @@ export function Account() {
 
                 {/* Address form */}
                 {showAddressForm && (
-                  <form onSubmit={handleSaveAddress} className="mb-8 p-6 border rounded-xl bg-slate-50">
-                    <h3 className="font-bold text-slate-800 mb-4">
+                  <form onSubmit={handleSaveAddress} className="mb-8 p-6 border dark:border-dark-border rounded-xl bg-slate-50 dark:bg-dark-bg">
+                    <h3 className="font-bold text-slate-800 dark:text-dark-text mb-4">
                       {editingAddressId ? t('account.editAddress') : t('account.addNewAddress')}
                     </h3>
 
@@ -649,8 +649,8 @@ export function Account() {
                       <div
                         className={`mb-4 p-3 rounded-lg flex items-center gap-2 text-sm font-medium ${
                           addressMessage.type === 'success'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-rose-50 text-rose-700'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300'
                         }`}
                       >
                         {addressMessage.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
@@ -660,27 +660,27 @@ export function Account() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">{t('account.receiverName')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.receiverName')}</label>
                         <input
                           type="text"
                           value={addressForm.receiver_name}
                           onChange={(e) => setAddressForm({ ...addressForm, receiver_name: e.target.value })}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-3 py-2 border dark:border-dark-border dark:bg-dark-surface dark:text-dark-text rounded-lg focus:ring-2 focus:ring-indigo-500"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">{t('account.phoneNumber')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.phoneNumber')}</label>
                         <input
                           type="tel"
                           value={addressForm.phone}
                           onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-3 py-2 border dark:border-dark-border dark:bg-dark-surface dark:text-dark-text rounded-lg focus:ring-2 focus:ring-indigo-500"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">{t('account.province')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.province')}</label>
                         <select
                           value={addressForm.province}
                           onChange={(e) => {
@@ -688,7 +688,7 @@ export function Account() {
                             setAddressForm({ ...addressForm, province: val, district: '', ward: '' });
                             fetchDistricts(val);
                           }}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white"
+                          className="w-full px-3 py-2 border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-dark-surface dark:text-dark-text"
                           required
                         >
                           <option value="">{t('account.selectProvince')}</option>
@@ -698,7 +698,7 @@ export function Account() {
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">{t('account.district')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.district')}</label>
                         <select
                           value={addressForm.district}
                           onChange={(e) => {
@@ -707,7 +707,7 @@ export function Account() {
                             fetchWards(val);
                           }}
                           disabled={!addressForm.province || loadingDistricts}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white disabled:bg-slate-100"
+                          className="w-full px-3 py-2 border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-dark-surface dark:text-dark-text disabled:bg-slate-100 dark:disabled:bg-dark-surface-hover"
                           required
                         >
                           <option value="">{loadingDistricts ? t('account.loading') : t('account.selectDistrict')}</option>
@@ -717,12 +717,12 @@ export function Account() {
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">{t('account.ward')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.ward')}</label>
                         <select
                           value={addressForm.ward}
                           onChange={(e) => setAddressForm({ ...addressForm, ward: e.target.value })}
                           disabled={!addressForm.district || loadingWards}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white disabled:bg-slate-100"
+                          className="w-full px-3 py-2 border dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-dark-surface dark:text-dark-text disabled:bg-slate-100 dark:disabled:bg-dark-surface-hover"
                           required
                         >
                           <option value="">{loadingWards ? t('account.loading') : t('account.selectWard')}</option>
@@ -732,12 +732,12 @@ export function Account() {
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">{t('account.streetAddress')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.streetAddress')}</label>
                         <input
                           type="text"
                           value={addressForm.street}
                           onChange={(e) => setAddressForm({ ...addressForm, street: e.target.value })}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-3 py-2 border dark:border-dark-border dark:bg-dark-surface dark:text-dark-text rounded-lg focus:ring-2 focus:ring-indigo-500"
                           required
                         />
                       </div>
@@ -746,7 +746,7 @@ export function Account() {
                     <div className="mt-4 flex flex-wrap items-center gap-6">
                       {/* Address type */}
                       <div className="flex items-center gap-3">
-                        <label className="text-sm font-medium text-slate-700">{t('account.addressType')}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-dark-text">{t('account.addressType')}</label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="radio"
@@ -756,8 +756,8 @@ export function Account() {
                             onChange={() => setAddressForm({ ...addressForm, address_type: 'home' })}
                             className="accent-indigo-600"
                           />
-                          <Home size={16} className="text-slate-500" />
-                          <span className="text-sm text-slate-600">{t('account.home')}</span>
+                          <Home size={16} className="text-slate-500 dark:text-dark-text-muted" />
+                          <span className="text-sm text-slate-600 dark:text-dark-text-muted">{t('account.home')}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -768,8 +768,8 @@ export function Account() {
                             onChange={() => setAddressForm({ ...addressForm, address_type: 'office' })}
                             className="accent-indigo-600"
                           />
-                          <Building2 size={16} className="text-slate-500" />
-                          <span className="text-sm text-slate-600">{t('account.office')}</span>
+                          <Building2 size={16} className="text-slate-500 dark:text-dark-text-muted" />
+                          <span className="text-sm text-slate-600 dark:text-dark-text-muted">{t('account.office')}</span>
                         </label>
                       </div>
 
@@ -781,7 +781,7 @@ export function Account() {
                           onChange={(e) => setAddressForm({ ...addressForm, is_default: e.target.checked })}
                           className="accent-indigo-600 w-4 h-4"
                         />
-                        <span className="text-sm text-slate-600">{t('account.setAsDefault')}</span>
+                        <span className="text-sm text-slate-600 dark:text-dark-text-muted">{t('account.setAsDefault')}</span>
                       </label>
                     </div>
 
@@ -789,14 +789,14 @@ export function Account() {
                       <button
                         type="submit"
                         disabled={isSavingAddr}
-                        className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-70"
+                        className="px-5 py-2 bg-indigo-600 dark:bg-dark-accent text-white rounded-lg text-sm font-medium hover:bg-indigo-700 dark:hover:bg-dark-accent-hover disabled:opacity-70"
                       >
                         {isSavingAddr ? t('account.saving') : t('account.save')}
                       </button>
                       <button
                         type="button"
                         onClick={closeAddressForm}
-                        className="px-5 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50"
+                        className="px-5 py-2 border border-slate-200 dark:border-dark-border rounded-lg text-sm text-slate-600 dark:text-dark-text-muted hover:bg-slate-50 dark:hover:bg-dark-surface-hover"
                       >
                         {t('account.cancel')}
                       </button>
@@ -809,7 +809,7 @@ export function Account() {
                               closeAddressForm();
                             }
                           }}
-                          className="px-5 py-2 ml-auto border border-rose-200 text-rose-600 rounded-lg text-sm font-medium hover:bg-rose-50"
+                          className="px-5 py-2 ml-auto border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-300 rounded-lg text-sm font-medium hover:bg-rose-50 dark:hover:bg-rose-950/40"
                         >
                           <Trash2 size={16} className="inline mr-1" /> {t('account.delete')}
                         </button>
@@ -825,51 +825,51 @@ export function Account() {
                   </div>
                 ) : addresses.length === 0 && !showAddressForm ? (
                   <div className="text-center py-12">
-                    <MapPin className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-                    <p className="text-slate-500 font-medium">{t('account.noAddress')}</p>
+                    <MapPin className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                    <p className="text-slate-500 dark:text-dark-text-muted font-medium">{t('account.noAddress')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {addresses.map((addr) => (
                       <div
                         key={addr.address_id}
-                        className="border rounded-xl p-4 hover:border-indigo-200 transition-colors cursor-pointer relative"
+                        className="border dark:border-dark-border rounded-xl p-4 hover:border-indigo-200 dark:hover:border-indigo-700 transition-colors cursor-pointer relative"
                         onClick={() => openEditForm(addr)}
                       >
                         <div className="flex items-start gap-3">
                           <div className="mt-0.5">
                             {addr.address_type === 'office' ? (
-                              <Building2 size={18} className="text-slate-400" />
+                              <Building2 size={18} className="text-slate-400 dark:text-dark-text-muted" />
                             ) : (
-                              <Home size={18} className="text-slate-400" />
+                              <Home size={18} className="text-slate-400 dark:text-dark-text-muted" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-bold text-slate-900">{addr.receiver_name}</span>
-                              <span className="text-slate-400">|</span>
-                              <span className="text-slate-600 text-sm">{addr.phone}</span>
+                              <span className="font-bold text-slate-900 dark:text-dark-text">{addr.receiver_name}</span>
+                              <span className="text-slate-400 dark:text-dark-text-muted">|</span>
+                              <span className="text-slate-600 dark:text-dark-text-muted text-sm">{addr.phone}</span>
                               {addr.is_default && (
-                                <span className="text-xs font-bold px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded">
+                                <span className="text-xs font-bold px-2 py-0.5 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-dark-accent rounded">
                                   {t('account.default')}
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-slate-500 dark:text-dark-text-muted">
                               {addr.street}, {addr.ward}, {addr.district}, {addr.province}
                             </p>
                           </div>
                           <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={() => openEditForm(addr)}
-                              className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-50"
+                              className="p-1.5 text-slate-400 dark:text-dark-text-muted hover:text-indigo-600 dark:hover:text-dark-accent rounded-lg hover:bg-slate-50 dark:hover:bg-dark-surface-hover"
                               title={t('account.edit')}
                             >
                               <Pencil size={16} />
                             </button>
                             <button
                               onClick={() => handleDeleteAddress(addr.address_id)}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-50"
+                              className="p-1.5 text-slate-400 dark:text-dark-text-muted hover:text-rose-600 dark:hover:text-rose-300 rounded-lg hover:bg-slate-50 dark:hover:bg-dark-surface-hover"
                               title={t('account.delete')}
                             >
                               <Trash2 size={16} />
